@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Result System</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1{
+            text-align: center;
+            color: darkblue;
+        }
+
+        .card{
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px lightgray;
+        }
+
+        .pass{
+            color: green;
+            font-weight: bold;
+        }
+
+        .fail{
+            color: red;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Student Result System</h1>
+
+    <h2>Total Students: {{ students|length }}</h2>
+
+    {% for student in students %}
+
+        <div class="card">
+
+            <h2>
+                {{ forloop.counter }}.
+                {{ student.name|upper }}
+            </h2>
+
+            <p>
+                Lowercase Name:
+                {{ student.name|lower }}
+            </p>
+
+            <p>
+                Marks:
+                {{ student.marks }}
+            </p>
+
+            <p>
+                Short Description:
+                {{ student.description|truncatewords:8 }}
+            </p>
+
+            <!-- PASS FAIL -->
+
+            {% if student.marks > 50 %}
+
+                <p class="pass">
+                    Result: PASS
+                </p>
+
+            {% else %}
+
+                <p class="fail">
+                    Result: FAIL
+                </p>
+
+            {% endif %}
+
+
+            <!-- GRADE SYSTEM -->
+
+            
+            {% if student.marks >= 80 %}
+               <h2>GRADE A+</h2>
+            {% elif student.marks >= 70 %}
+                <h2>GRADE A</h2>
+            {% elif student.marks >= 60 %}
+                <h2>GRADE B</h2>
+            {% elif student.marks >= 50 %}
+                <h2>GRADE C</h2>
+            {% elif student.marks >= 40 %}
+                <h2>GRADE D</h2>
+            {% else %}
+                <h2>GRADE F</h2>
+                
+            {% endif %}
+                
+
+        </div>
+
+    {% endfor %}
+
+</body>
+</html>
