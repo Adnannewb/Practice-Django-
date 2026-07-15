@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}
+    Delete Expense
+{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+	<div class="col-12 col-md-10 col-lg-7 col-xl-6">
+		<div class="card page-card shadow-sm border-danger">
+			<div class="card-body p-4 p-md-5">
+				<p class="text-uppercase text-danger fw-semibold small mb-1">Confirm Delete</p>
+				<h1 class="h3 mb-3">Delete Expense</h1>
+				<div class="alert alert-warning" role="alert">
+					This action cannot be undone.
+				</div>
+
+				<div class="bg-light rounded-3 p-3 mb-4">
+					<p class="mb-1"><strong>Title:</strong> {{ expense.title }}</p>
+					<p class="mb-1"><strong>Amount:</strong> {{ expense.amount }}</p>
+					<p class="mb-1"><strong>Type:</strong> {{ expense.type }}</p>
+					<p class="mb-0"><strong>Category:</strong> {{ expense.category }}</p>
+				</div>
+
+				<form method="post">
+						{% csrf_token %}
+						<div class="d-flex flex-column flex-sm-row gap-2">
+							<button type="submit" class="btn btn-danger">Yes, Delete</button>
+							<a href="{% url 'expenses_list' %}" class="btn btn-outline-secondary">Cancel</a>
+						</div>
+					</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Dashboard
+{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center g-4">
+    <div class="col-12 col-xxl-11">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+            <div>
+                <p class="text-uppercase text-primary fw-semibold small mb-1">Overview</p>
+                <h1 class="display-6 fw-semibold mb-1">All Expenses</h1>
+                <p class="text-muted mb-0">Track income and spending in one responsive table.</p>
+            </div>
+            <a href="{% url 'add_expense' %}" class="btn btn-primary btn-lg shadow-sm">Add Expense</a>
+        </div>
+
+        <div class="card page-card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                    <div>
+                        <h2 class="h5 mb-1">Filter by date</h2>
+                        <p class="text-muted mb-0">Narrow the list by month and year.</p>
+                    </div>
+                </div>
+
+                <form action="{% url 'expenses_list' %}" method="get" class="row g-3 align-items-end">
+                    <div class="col-12 col-md-4">
+                        <label for="month" class="form-label">Month</label>
+                        <input type="number" class="form-control" id="month" min="1" max="12" placeholder="1" name="month">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="year" class="form-label">Year</label>
+                        <input type="number" class="form-control" id="year" placeholder="2026" name="year">
+                    </div>
+                    <div class="col-12 col-md-4 d-grid d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-outline-primary px-4">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="card page-card shadow-sm h-100 border-0">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Total Balance</p>
+                        <h2 class="h3 mb-0 fw-semibold">{{ total_balance }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card page-card shadow-sm h-100 border-0">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Total Records</p>
+                        <h2 class="h3 mb-0 fw-semibold">{{ expenses|length }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card page-card shadow-sm h-100 border-0">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Quick Action</p>
+                        <a href="{% url 'add_expense' %}" class="btn btn-outline-primary">Create New Entry</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card page-card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Category</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expenses %}
+                            <tr>
+                                <td class="fw-medium">{{ expense.title }}</td>
+                                <td>{{ expense.amount }}</td>
+                                <td>
+                                    {% if expense.type == 'Income' %}
+                                        <span class="badge text-bg-success">{{ expense.type }}</span>
+                                    {% else %}
+                                        <span class="badge text-bg-danger">{{ expense.type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ expense.date|date:"M d, Y" }}</td>
+                                <td>{{ expense.category }}</td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'update_expense' expense.pk %}" class="btn btn-outline-primary">Edit</a>
+                                        <a href="{% url 'delete_expense' expense.pk %}" class="btn btn-outline-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    No expenses found yet. Add your first entry to get started.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="5" class="fw-semibold">Total Balance</td>
+                                <td class="fw-semibold text-end">{{ total_balance }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

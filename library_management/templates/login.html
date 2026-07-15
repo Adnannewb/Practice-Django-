@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Library Management{% endblock title %}
+
+{% block content %}
+<div class="auth-shell py-4 py-lg-5">
+    <div class="container">
+        <div class="row justify-content-center g-0 shadow-soft">
+            <div class="col-12 col-lg-10 col-xxl-8">
+                <div class="auth-panel row g-0">
+                    <div class="col-lg-5 auth-aside p-4 p-lg-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="auth-badge mb-4">L</span>
+                            <p class="section-label text-white-50 mb-2">Welcome back</p>
+                            <h1 class="display-6 fw-bold mb-3">Sign in to your library dashboard.</h1>
+                            <p class="mb-0 text-white-50">Access your collection, review inventory, and continue managing books from one clean workspace.</p>
+                        </div>
+                        <div class="mt-5 pt-4 soft-divider"></div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="stat-chip px-3 py-2 small fw-semibold">Fast access</span>
+                            <span class="stat-chip px-3 py-2 small fw-semibold">Secure login</span>
+                            <span class="stat-chip px-3 py-2 small fw-semibold">Responsive UI</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 bg-white p-4 p-lg-5">
+                        <p class="section-label mb-2">Login</p>
+                        <h2 class="h3 fw-bold mb-2">Continue to dashboard</h2>
+                        <p class="text-muted-strong mb-4">Use your username and password to open the library dashboard.</p>
+
+                        <form method="post" class="vstack gap-3">
+                            {% csrf_token %}
+                            {% if next %}
+                                <input type="hidden" name="next" value="{{ next }}">
+                            {% endif %}
+                            <div>
+                                <label for="username" class="form-label fw-semibold">Username</label>
+                                <input type="text" id="username" name="username" class="form-control form-control-lg" placeholder="Enter username" required>
+                            </div>
+                            <div>
+                                <label for="password" class="form-label fw-semibold">Password</label>
+                                <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="Enter password" required>
+                            </div>
+                            <button type="submit" class="btn btn-brand btn-lg rounded-pill px-4 mt-2">Login</button>
+                        </form>
+
+                        <p class="mt-4 mb-0 text-muted-strong">
+                            New here? <a href="{% url 'register' %}" class="link-decoration-none fw-semibold">Create an account</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="row g-0 auth-shell form-panel">
+                    <div class="col-lg-5 auth-side p-4 p-lg-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="page-badge mb-3">Welcome back</span>
+                            <h1 class="hero-title h2 fw-bold mb-3">Log in and keep your notes moving.</h1>
+                            <p class="mb-4">Pick up right where you left off with a calmer, cleaner workspace built for quick note management.</p>
+                        </div>
+                        <ul class="auth-list">
+                            <li>Fast access to your dashboard</li>
+                            <li>Search and edit notes instantly</li>
+                            <li>Keep favorites visible</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-7 p-4 p-lg-5 bg-white">
+                        <div class="mb-4">
+                            <div class="section-label mb-2">Login</div>
+                            <h2 class="h3 fw-bold mb-2">Sign in to your account</h2>
+                            <p class="text-muted-strong mb-0">Use your username and password to continue.</p>
+                        </div>
+
+                        <form method="post" class="needs-validation">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ next }}">
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-semibold">Username</label>
+                                <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="Enter username" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-semibold">Password</label>
+                                <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Enter password" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-brand btn-lg rounded-pill px-4 w-100">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+    

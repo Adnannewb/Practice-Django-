@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | Library Management{% endblock title %}
+
+{% block content %}
+<div class="auth-shell py-4 py-lg-5">
+    <div class="container">
+        <div class="row justify-content-center g-0">
+            <div class="col-12 col-lg-10 col-xxl-8">
+                <div class="auth-panel row g-0">
+                    <div class="col-lg-5 auth-aside p-4 p-lg-5 d-flex flex-column justify-content-between order-lg-2">
+                        <div>
+                            <span class="auth-badge mb-4">R</span>
+                            <p class="section-label text-white-50 mb-2">Create account</p>
+                            <h1 class="display-6 fw-bold mb-3">Join the library workspace.</h1>
+                            <p class="mb-0 text-white-50">Register once and manage books, inventory, and catalog updates from a focused dashboard.</p>
+                        </div>
+                        <div class="mt-5 pt-4 soft-divider"></div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="stat-chip px-3 py-2 small fw-semibold">Quick onboarding</span>
+                            <span class="stat-chip px-3 py-2 small fw-semibold">Book tracking</span>
+                            <span class="stat-chip px-3 py-2 small fw-semibold">Admin ready</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 bg-white p-4 p-lg-5 order-lg-1">
+                        <p class="section-label mb-2">Register</p>
+                        <h2 class="h3 fw-bold mb-2">Create your account</h2>
+                        <p class="text-muted-strong mb-4">Set up your username, email, and password to get started.</p>
+
+                        <form method="post" class="vstack gap-3">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-brand btn-lg rounded-pill px-4 mt-2">Register</button>
+                        </form>
+
+                        <p class="mt-4 mb-0 text-muted-strong">
+                            Already have an account? <a href="{% url 'login' %}" class="link-decoration-none fw-semibold">Login here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

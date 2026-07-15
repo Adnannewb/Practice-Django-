@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-xl-6">
+                <div class="dialog-panel p-4 p-lg-5 text-center">
+                    <div class="mx-auto mb-4 d-inline-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger" style="width:4rem;height:4rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M8 1.5A6.5 6.5 0 1 0 8 14.5A6.5 6.5 0 0 0 8 1.5Zm.75 3.5a.75.75 0 0 0-1.5 0v3.5a.75.75 0 0 0 1.5 0V5Zm-.75 6.5a1 1 0 1 0 0-2a1 1 0 0 0 0 2Z"/>
+                        </svg>
+                    </div>
+                    <span class="page-badge mb-3">Danger zone</span>
+                    <h1 class="hero-title h3 fw-bold mb-3 mt-2">Delete this note?</h1>
+                    <p class="text-muted-strong mb-4">This action cannot be undone. The note will be permanently removed from your list.</p>
+
+                    <form method="post" class="d-flex justify-content-center gap-2 flex-wrap">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Delete Note</button>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg rounded-pill px-4">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

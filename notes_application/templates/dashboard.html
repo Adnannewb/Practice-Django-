@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="hero-panel p-4 p-lg-5 mb-4 mb-lg-5">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-8">
+                    <span class="page-badge mb-3">Dashboard</span>
+                    <h1 class="hero-title display-5 fw-bold mb-3">A quieter place to review your notes and move on to the next task.</h1>
+                    <p class="hero-copy text-muted-strong mb-0">Use this space to scan the full list, keep an eye on favorites, and jump into editing without leaving the page flow.</p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="surface-muted rounded-4 p-4">
+                        <div class="section-label mb-2">Total notes</div>
+                        <div class="display-5 fw-bold mb-2">{{ notes|length }}</div>
+                        <p class="text-muted-strong mb-0">All notes are visible below with direct actions for editing or deleting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-panel p-3 p-lg-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+                <div>
+                    <div class="section-label mb-2">Quick search</div>
+                    <h2 class="h4 fw-bold mb-0">Find a note in seconds</h2>
+                </div>
+                <a class="btn btn-brand rounded-pill px-4" href="{% url 'create_note' %}">Add note</a>
+            </div>
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-12 col-lg">
+                    <label for="search" class="form-label fw-semibold">Search notes</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-white">⌕</span>
+                        <input type="text" class="form-control" id="search" name="search" value="{{ request.GET.search }}" placeholder="Search by title or content">
+                    </div>
+                </div>
+                <div class="col-12 col-lg-auto">
+                    <button type="submit" class="btn btn-brand btn-lg rounded-pill px-4 w-100">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="content-panel p-3 p-lg-4">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Preview</th>
+                            <th scope="col">Favourite</th>
+                            <th scope="col">Created</th>
+                            <th scope="col">Updated</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                            <tr>
+                                <td class="fw-semibold">{{ note.title }}</td>
+                                <td>
+                                    <div class="text-muted-strong text-truncate" style="max-width: 24rem;">{{ note.content }}</div>
+                                </td>
+                                <td>
+                                    {% if note.is_favourite %}
+                                        <span class="badge rounded-pill text-bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">Favourite</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill text-bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2">Normal</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted-strong">{{ note.created_at|date:"d M Y h:i A" }}</td>
+                                <td class="text-muted-strong">{{ note.updated_at|date:"d M Y h:i A" }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                        <a class="btn btn-soft btn-sm rounded-pill px-3" href="{% url 'update_note' note.pk %}">Edit</a>
+                                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="{% url 'delete_note' note.pk %}">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="py-5 text-center">
+                                    <div class="py-4">
+                                        <h2 class="h4 fw-semibold mb-2">No notes found</h2>
+                                        <p class="text-muted-strong mb-4">Try a different search term or create your first note.</p>
+                                        <a class="btn btn-brand rounded-pill px-4" href="{% url 'create_note' %}">Add your first note</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+    

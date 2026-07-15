@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Details | Library Management{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center g-4">
+    <div class="col-12 col-xl-10">
+        <div class="hero-card p-4 p-lg-5">
+            <div class="d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-lg-start">
+                <div class="d-flex flex-column gap-3">
+                    <div>
+                        <p class="section-label mb-2">Protected details</p>
+                        <h1 class="display-6 fw-bold mb-2">{{ book.title }}</h1>
+                        <p class="text-muted-strong mb-0">This page is visible only to signed-in users.</p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge rounded-pill text-bg-light border px-3 py-2">Author: {{ book.author }}</span>
+                        <span class="badge rounded-pill text-bg-light border px-3 py-2">Publisher: {{ book.publisher }}</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'update_book' book.pk %}" class="btn btn-brand rounded-pill px-4">Edit Book</a>
+                    <a href="{% url 'delete_book' book.pk %}" class="btn btn-outline-danger rounded-pill px-4">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="content-card p-4 h-100">
+            <p class="section-label mb-2">Snapshot</p>
+            <h2 class="h4 fw-bold mb-3">Inventory</h2>
+            <div class="d-grid gap-3">
+                <div>
+                    <p class="text-muted-strong mb-1">Price</p>
+                    <p class="h3 fw-bold mb-0">{{ book.price }}</p>
+                </div>
+                <div>
+                    <p class="text-muted-strong mb-1">Quantity</p>
+                    {% if book.quantity > 0 %}
+                        <span class="badge rounded-pill text-bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ book.quantity }} in stock</span>
+                    {% else %}
+                        <span class="badge rounded-pill text-bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">Out of stock</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="content-card p-4 h-100">
+            <p class="section-label mb-2">Record</p>
+            <h2 class="h4 fw-bold mb-4">Book information</h2>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Field</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-semibold">Title</td>
+                            <td>{{ book.title }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-semibold">Author</td>
+                            <td>{{ book.author }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-semibold">Publisher</td>
+                            <td>{{ book.publisher }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-semibold">Price</td>
+                            <td>{{ book.price }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-semibold">Quantity</td>
+                            <td>{{ book.quantity }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <a href="{% url 'home' %}" class="btn btn-soft rounded-pill px-4">Back to Books</a>
+            <span class="text-muted-strong small">Signed in as {{ user.username }}</span>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

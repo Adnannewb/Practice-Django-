@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="row g-0 auth-shell form-panel">
+                    <div class="col-lg-5 auth-side p-4 p-lg-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="page-badge mb-3">Create account</span>
+                            <h1 class="hero-title h2 fw-bold mb-3">Start with a note app that feels polished from day one.</h1>
+                            <p class="mb-4">Create your account to organize ideas, track reminders, and revisit the notes that matter most.</p>
+                        </div>
+                        <ul class="auth-list">
+                            <li>Personal dashboard for your notes</li>
+                            <li>Quick create, edit, and delete flows</li>
+                            <li>Mobile-friendly layout everywhere</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-7 p-4 p-lg-5 bg-white">
+                        <div class="mb-4">
+                            <div class="section-label mb-2">Register</div>
+                            <h2 class="h3 fw-bold mb-2">Create your account</h2>
+                            <p class="text-muted-strong mb-0">Fill in the details below to get started.</p>
+                        </div>
+
+                        <form method="post" class="needs-validation">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label fw-semibold">Username</label>
+                                <input type="text" class="form-control form-control-lg" name="username" id="id_username" value="{{ form.username.value|default_if_none:'' }}" placeholder="Choose a username" required>
+                                {% if form.username.errors %}
+                                    <div class="text-danger small mt-2">{{ form.username.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_email" class="form-label fw-semibold">Email</label>
+                                <input type="email" class="form-control form-control-lg" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" placeholder="name@example.com" required>
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-2">{{ form.email.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_password1" class="form-label fw-semibold">Password</label>
+                                <input type="password" class="form-control form-control-lg" name="password1" id="id_password1" placeholder="Create a password" required>
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small mt-2">{{ form.password1.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="id_password2" class="form-label fw-semibold">Confirm password</label>
+                                <input type="password" class="form-control form-control-lg" name="password2" id="id_password2" placeholder="Repeat your password" required>
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small mt-2">{{ form.password2.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger small mb-3">{{ form.non_field_errors|join:", " }}</div>
+                            {% endif %}
+
+                            <button type="submit" class="btn btn-brand btn-lg rounded-pill px-4 w-100">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+    

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}
+    Add Expense
+{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <div class="d-flex align-items-end justify-content-between gap-3 mb-3">
+            <div>
+                <p class="text-uppercase text-primary fw-semibold small mb-1">Create</p>
+                <h1 class="h3 mb-0">Add Expense</h1>
+            </div>
+            <a href="{% url 'expenses_list' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+
+        <div class="card page-card shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <form action="{% url 'add_expense' %}" method="POST" class="row g-3">
+                    {% csrf_token %}
+
+                    <div class="col-12">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" id="title" placeholder="Enter title">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" name="amount" id="amount" placeholder="Enter amount">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="type" class="form-label">Type</label>
+                        <select name="type" id="type" class="form-select">
+                            <option value="">Select type</option>
+                            <option value="Income">Income</option>
+                            <option value="Expense">Expense</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="category" class="form-label">Category</label>
+                        <input type="text" class="form-control" name="category" id="category" placeholder="Enter category">
+                    </div>
+
+                    <div class="col-12 d-grid d-md-flex justify-content-md-end mt-2">
+                        <button type="submit" class="btn btn-primary px-4">Save Expense</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

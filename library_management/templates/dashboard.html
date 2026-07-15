@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Library Management{% endblock title %}
+
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-12">
+        <div class="hero-card p-4 p-lg-5">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+                <div>
+                    <p class="section-label mb-2">Dashboard</p>
+                    <h1 class="display-6 fw-bold mb-2">Welcome back, {{ user.username }}</h1>
+                    <p class="text-muted-strong mb-0">Manage your library inventory, review book details, and add new titles from a single workspace.</p>
+                </div>
+                <a href="{% url 'add_book' %}" class="btn btn-brand btn-lg rounded-pill px-4">Add New Book</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="content-card p-4 h-100">
+            <p class="text-muted-strong mb-1">Total Books</p>
+            <h2 class="h3 fw-bold mb-0">{{ books|length }}</h2>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="content-card p-4 h-100">
+            <p class="text-muted-strong mb-1">Quick Action</p>
+            <a href="{% url 'home' %}" class="btn btn-soft rounded-pill px-3">Browse Catalog</a>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="content-card p-4 h-100">
+            <p class="text-muted-strong mb-1">Next Step</p>
+            <a href="{% url 'add_book' %}" class="btn btn-brand rounded-pill px-3">Create New Entry</a>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="row g-3 g-lg-4">
+            {% for book in books %}
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="content-card p-4 h-100 d-flex flex-column">
+                        <p class="section-label mb-2">Book {{ forloop.counter }}</p>
+                        <h3 class="h4 fw-bold mb-1">{{ book.title }}</h3>
+                        <p class="text-muted-strong mb-1">{{ book.author }}</p>
+                        <p class="small text-muted-strong mb-3">Publisher: {{ book.publisher }}</p>
+                        <div class="mt-auto d-flex gap-2 flex-wrap">
+                            <a href="{% url 'book_details' book.pk %}" class="btn btn-brand rounded-pill px-3">View Details</a>
+                            <a href="{% url 'update_book' book.pk %}" class="btn btn-soft rounded-pill px-3">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="content-card p-5 text-center">
+                        <h2 class="h4 fw-bold mb-2">No books found</h2>
+                        <p class="text-muted-strong mb-4">Start by creating your first entry.</p>
+                        <a href="{% url 'add_book' %}" class="btn btn-brand rounded-pill px-4">Add First Book</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
+    
