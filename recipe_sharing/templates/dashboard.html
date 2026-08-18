@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h1>All Shared Recipe</h1>
+    <div class="card-recipe">
+        
+        {% for recipe in recipes %}
+            <h1>{{recipe.title}}</h1>
+            <img src="{{recipe.recipe_image.url}}" alt="{{image.title}}">
+            <p>{{recipe.ingredients}}</p>
+            <p>{{recipe.instructions}}</p>
+            <p>{{recipe.cooking_time}} min</p>
+            <h3>Shared by {{recipe.owner}}</h3>
+            <a href="{% url "update_recipe" recipe.pk %}">Edit</a>
+            <a href="{% url "delete_recipe" recipe.pk %}">Delete</a>
+        {% endfor %}
+            
+    </div>
+{% endblock content %}
+    

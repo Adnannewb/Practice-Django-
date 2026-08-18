@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center">Dashboard</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>Welcome, {{ user.username }}!</h2>
+            <p>Email: {{ user.email }}</p>
+            <p>Phone: {{ user.userprofile.phone }}</p>
+            <p>Address: {{ user.userprofile.address }}</p>
+            <p>Date of Birth: {{ user.userprofile.dob }}</p>
+            <p>Profile Photo:</p>
+            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Photo" width="200">
+        </div>
+    </div>
+
+    <a href="{% url 'userprofile' user.pk %}" class="btn btn-primary">Update Profile</a>
+    
+    <h1>My organised Events</h1>
+    <ul>
+        {% for event in events %}
+            <li>{{ event.name }} - {{ event.date }}</li>
+            <a href="{% url 'update_event' event.pk %}" class="btn btn-secondary">Edit</a>
+            <a href="{% url "delete_event" event.pk %}" class="btn btn-danger" >Delete</a>
+        {% empty %}
+            <li>You have not organised any events yet.</li>
+        {% endfor %}
+    </ul>
+    <h1>My Registered Events</h1>
+    <ul>
+    {% for registration in registrations %}
+        <li>{{ registration.event.name }} - {{ registration.event.date }}</li>
+        
+        <!-- Fix: Use single space assignment '==' is illegal in template tags -->
+        {% if registration.status == "registered" %}
+            <form method="post" action="{% url 'cancel_registration' registration.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to unregister from this event?')">Unregister</button>
+            </form>
+        {% else %}
+            <!-- Styled to look cleanly nested next to the list text elements -->
+            <span class="text-muted d-block">(Registration Cancelled)</span>
+        {% endif %}
+            
+        {% empty %}
+            <li>You have not registered for any events yet.</li>
+    {% endfor %}
+    </ul>
+
+
+
+{% endblock content %}

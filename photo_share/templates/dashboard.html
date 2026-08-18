@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>All Photos</h1>
+    <div class="card">
+        
+        {% for photo in photos %}
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" width="300">
+            <h1>{{photo.title}}</h1>
+            <a href="{% url "image_update" photo.pk %}">Edit</a>
+            <a href="{% url "image_delete" photo.pk %}">Delete</a>
+        {% endfor %}
+            
+    </div>
+
+{% endblock content %}

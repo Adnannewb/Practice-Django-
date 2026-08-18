@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Completed</th>
+                <th>End Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.is_completed|yesno:"Yes,No" }}</td>
+                <td>{{ task.end_date|date:"F j, Y, g:i a" }}</td>
+                <td>
+                    <a href="{% url "taskupdate" task.pk %}">Edit</a>
+                    <a href="{% url "taskdelete" task.pk %}">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content %}
+    

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <h1 class="text-center">Are you sure you want to delete this event?</h1>
+    <p class="text-center">This action cannot be undone.</p>
+    <form method="post" class="text-center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a class="btn btn-secondary" href="{% url "event_detail" event.pk %}">Cancel</a>
+    </form>
+{% endblock content %}
+    

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <h1 class="text-center">Event Registration</h1>
+    <form  method="post">
+        {% csrf_token %}
+        <!-- Add form fields here -->
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+{% endblock content %}
+    

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>All Photos</h1>
+    <div class="grid">
+        
+        {% for photo in photos %}
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" width="300">
+            <h1>{{photo.title}}</h1>
+            <h3>{{photo.uploader.username}}</h3>
+        {% endfor %}
+            
+    </div>
+
+{% endblock content %}
+    
