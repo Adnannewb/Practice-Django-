@@ -1,0 +1,29 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Environment Variables & Secrets
+.env
+db.sqlite3
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django Media & Static directories (User uploads shouldn't go to git)
+media/
+staticfiles/
+
+# IDE settings
+../.vscode/
+.idea/
+
+# PostgreSQL Backup files
+*.sql
+*.sql.gz
+*.tar
+
+# Database logs
+*.log
