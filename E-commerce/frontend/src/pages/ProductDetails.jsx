@@ -1,12 +1,15 @@
 import {Link} from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+
 function ProductDetails() {
     const BASE_URL=import.meta.env.VITE_DJANGO_BASE_URL;
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { addToCart } = useCart();
 
     useEffect(() => {
         async function fetchProduct() {
@@ -35,9 +38,6 @@ function ProductDetails() {
     <div>
       
       {/* Add your product details content here */}
-      {/* design it like one image on left and details on right with a button to add to cart and a button to go back to product list.right side text will be matching card type with the image doesn;t look imbalace 
-      proper padding and border and shadow and rounded corners and responsive design and beautiful and back to product list button should be on top left corner and add to cart button should be below the details and make sure the buttons are styled properly with hover effects and proper spacing between them and the details text should be aligned properly with the image and make sure the image is responsive and maintains its aspect ratio and the details section should have a background color that complements the image and the overall design should be visually appealing and user-friendly. 
-         */}
         <div className="min-h-screen bg-gray-100 py-10">
         <div className="max-w-6xl mx-auto bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row gap-6">
             <div className="md:w-1/2">
@@ -51,7 +51,7 @@ function ProductDetails() {
                 </div>
                 <div className="flex flex-col gap-4">
                     <Link to="/" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-center">Back to Product List</Link>
-                    <button className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Add to Cart</button>
+                    <button onClick={() => addToCart(product)} className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Add to Cart</button>
                 </div>
             </div>
         </div>
