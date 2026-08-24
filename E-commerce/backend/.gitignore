@@ -17,7 +17,7 @@ media/
 staticfiles/
 
 # IDE settings
-../.vscode/
+./.vscode/
 .idea/
 
 # PostgreSQL Backup files
