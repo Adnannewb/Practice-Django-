@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Product,Category,CartItem,Cart,Order,OrderItem
 from .serializers import ProductSerializer,CategorySerializer,CartSerializer,CartItemSerializer
 from django.contrib.auth.models import User
+from django.db import transaction
 from .serializers import UserSerializer,RegisterSerializer
 
 
@@ -39,7 +40,12 @@ def get_cart(request):
 @permission_classes([IsAuthenticated])
 def add_to_cart(request):
     product_id=request.data.get('product_id')
-    product=Product.objects.get(id=product_id)
+    if not product_id:
+        return Response({'error':'Product ID is required'}, status=400)
+    try:
+        product=Product.objects.get(id=product_id)
+    except (Product.DoesNotExist, ValueError, TypeError):
+        return Response({'error':'Product not found'}, status=404)
     cart,created=Cart.objects.get_or_create(user=request.user)
     item,created=CartItem.objects.get_or_create(cart=cart,product=product)
     if not created:
@@ -54,25 +60,27 @@ def update_cart_quantity(request):
     item_id=request.data.get('item_id')
     quantity=request.data.get('quantity')
     if not item_id or quantity is None:
-        return Response({'error':'Item ID and quantity are required'})
+        return Response({'error':'Item ID and quantity are required'}, status=400)
     try:
-        item=CartItem.objects.get(id=item_id)
-        if int(quantity)<1:
+        quantity=int(quantity)
+        if quantity < 1:
+            item=CartItem.objects.get(id=item_id, cart__user=request.user)
             cart=item.cart
             item.delete()
         else:
-            item.quantity=int(quantity)
+            item=CartItem.objects.get(id=item_id, cart__user=request.user)
+            item.quantity=quantity
             item.save()
             cart=item.cart
         return Response({'message':'Cart quantity updated successfully', 'cart':CartSerializer(cart).data})
-    except CartItem.DoesNotExist:
-        return Response({'error':'Item not found'})
+    except (CartItem.DoesNotExist, ValueError, TypeError):
+        return Response({'error':'Invalid quantity or item not found'}, status=404)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def remove_from_cart(request):
     item_id=request.data.get('item_id')
-    item=CartItem.objects.filter(id=item_id).first()
+    item=CartItem.objects.filter(id=item_id, cart__user=request.user).first()
     if item is None:
         return Response({'error':'Item not found'}, status=404)
     cart=item.cart
@@ -82,84 +90,36 @@ def remove_from_cart(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_order(request):
-    # try:
-    #     data=request.data
-        
-    #     name=data.get('name')
-    #     address=data.get('address')
-    #     phone=data.get('phone')
-    #     payment_method=data.get('payment_method','COD')
-    #     cart=Cart.objects.first()
-        
-    #     if not cart or not cart.items.exists():
-    #         return Response({'error':'Cart is empty'},status=400)
-    #     total=sum(item.product.price * item.quantity for item in cart.items.all())
-        
-    #     #create order
-    #     order=Order.objects.create(
-    #         user=None,
-    #         total_amount=total,
-    #     )
-        
-    #     #create order item
-    #     for item in cart.items.all():
-    #         OrderItem.objects.create(
-    #             order=order,
-    #             product=item.product,
-    #             quantity=item.quantity,
-    #             price=item.product.price,
-    #         )
+    data=request.data
+    name=str(data.get('name', '')).strip()
+    address=str(data.get('address', '')).strip()
+    phone=str(data.get('phone', '')).strip()
+    payment_method=data.get('payment_method', 'COD')
+    if not name or not address:
+        return Response({'error':'Name and address are required'}, status=400)
+    if not phone.isdigit() or len(phone) != 10:
+        return Response({'error':'Invalid phone number'}, status=400)
+    if payment_method not in {'COD', 'Online Payment', 'Credit Card'}:
+        return Response({'error':'Invalid payment method'}, status=400)
 
-    #     cart.items.all().delete()
-    #     return Response({
-    #         "message":"Order Placed Successfully",
-    #         "Order_Id":order.id,
-    #     })
-    # except Exception as e:
-        # return Response({"error":str(e)},status=500)
-    try:
-        data=request.data
-        name=data.get('name')
-        address=data.get('address')
-        phone=data.get('phone')
-        payment_method=data.get('payment_method','COD')
-        
-        #validate phone
-        if not phone.isdigit() or len(phone)!=10:
-            return Response({'error':'Invalid phone number'},status=400)
-        
+    with transaction.atomic():
         cart,created=Cart.objects.get_or_create(user=request.user)
-        
-        if not cart or not cart.items.exists():
-            return Response({'error':'Cart is empty'},status=400)
-        total=sum(item.product.price * item.quantity for item in cart.items.all())
-        
-        #create order
-        order=Order.objects.create(
-            user=request.user,
-            total_amount=total,
-        )
-        
-        #create order item
-        for item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.quantity,
-                price=item.product.price,
-            )
-
+        items=list(cart.items.select_related('product'))
+        if not items:
+            return Response({'error':'Cart is empty'}, status=400)
+        total=sum(item.product.price * item.quantity for item in items)
+        order=Order.objects.create(user=request.user, total_amount=total)
+        OrderItem.objects.bulk_create([
+            OrderItem(order=order, product=item.product,
+                      quantity=item.quantity, price=item.product.price)
+            for item in items
+        ])
         cart.items.all().delete()
-        return Response({
-            "message":"Order Placed Successfully",
-            "Order_Id":order.id,
-        }) 
-    except Exception as e:
-        return Response({"error":str(e)},status=500)
+    return Response({"message":"Order Placed Successfully", "Order_Id":order.id})
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def register_user(request):
+def register_view(request):
     serializer=RegisterSerializer(data=request.data)
     if serializer.is_valid():
         user=serializer.save()

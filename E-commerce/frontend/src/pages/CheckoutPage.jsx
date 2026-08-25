@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useCart} from "../context/CartContext";
+import {useCart} from "../context/useCart";
+import {authFetch} from "../utils/auth";
 
 function CheckoutPage() {
     const BASEURL=import.meta.env.VITE_DJANGO_BASE_URL;
@@ -26,7 +27,7 @@ function CheckoutPage() {
         e.preventDefault();
         setLoading(true);
         try{
-            const response=await fetch(`${BASEURL}/api/orders/create/`,{
+            const response=await authFetch(`${BASEURL}/api/orders/create/`,{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json",

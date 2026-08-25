@@ -4,6 +4,9 @@ import ProductList from './pages/Product_list';
 import Navbar from './components/Navbar';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import SignUp from './pages/SignUp';
+import Login from './pages/Login';
+import PrivateRouter from './components/PrivateRouter';
 
 function App() {
   
@@ -16,7 +19,12 @@ function App() {
           <Route path="/" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route element={<PrivateRouter />}>
+            <Route path="/checkout" element={<CheckoutPage />} />
+          </Route>
+          <Route path="/register" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          
         </Routes>
       </Router>
     </div>

@@ -13,6 +13,9 @@ function ProductList() {
     async function fetchProducts() {
       try {
         const response = await fetch(`${BASE_URL}/api/product/`);
+        if (!response.ok) {
+          throw new Error('Failed to load products');
+        }
         const data = await response.json();
         setProducts(data);
       } catch (error) {
@@ -23,7 +26,7 @@ function ProductList() {
     }
 
     fetchProducts();
-  }, []);
+  }, [BASE_URL]);
 
   if(loading){
     return <div className="text-center ">Loading...</div>;

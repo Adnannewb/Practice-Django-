@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import {useCart} from '../context/CartContext';
+import {useCart} from '../context/useCart';
 function CartPage(){
     const BASEURL=import.meta.env.VITE_DJANGO_BASE_URL;
     const {cartItems,removeFromCart,updateQuantity}=useCart();

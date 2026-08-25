@@ -1,6 +1,6 @@
-import { createContext,useContext,useState,useEffect } from "react";
-
-const CartContext=createContext();
+import { useState,useEffect } from "react";
+import {authFetch,getAccessToken} from "../utils/auth";
+import { CartContext } from "./CartContext.js";
 export const CartProvider=({children})=>{
     const BASE_URL=import.meta.env.VITE_DJANGO_BASE_URL;
     const [cartItems,setCartItems]=useState([])
@@ -8,8 +8,18 @@ export const CartProvider=({children})=>{
 
     useEffect(()=>{
         const fetchCart=async()=>{
+            if (!getAccessToken()) {
+                setCartItems([]);
+                setTotal(0);
+                return;
+            }
             try{
-                const response=await fetch(`${BASE_URL}/api/cart/`);
+                const response=await authFetch(`${BASE_URL}/api/cart/`);
+                if (response.status === 401) {
+                    setCartItems([]);
+                    setTotal(0);
+                    return;
+                }
                 if (!response.ok){
                     throw new Error("Failed to fetch cart");
                 }
@@ -41,12 +51,10 @@ const addToCart=async(product)=>{
 
     // Send a POST request to the backend to add the product to the cart
     try {
-        const response = await fetch(`${BASE_URL}/api/cart/add/`, {
+        const productId = typeof product === 'object' ? product.id : product;
+        const response = await authFetch(`${BASE_URL}/api/cart/add/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ product_id: product.id, quantity: 1 }),
+            body: JSON.stringify({ product_id: productId, quantity: 1 }),
         });
 
         if (!response.ok) {
@@ -68,11 +76,8 @@ const addToCart=async(product)=>{
 
 const removeFromCart=async(id)=>{
     try {
-        const response = await fetch(`${BASE_URL}/api/cart/remove/`, {
+        const response = await authFetch(`${BASE_URL}/api/cart/remove/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ item_id: id }),
         });
 
@@ -98,11 +103,8 @@ const removeFromCart=async(id)=>{
 const updateQuantity=async(id,quantity)=>{
     if (quantity < 1) return;
     try {
-        const response = await fetch(`${BASE_URL}/api/cart/update/`, {
+        const response = await authFetch(`${BASE_URL}/api/cart/update/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ item_id: id, quantity: quantity }),
         });
 
@@ -136,4 +138,3 @@ return(
 
 
 };
-export const useCart=()=>useContext(CartContext);

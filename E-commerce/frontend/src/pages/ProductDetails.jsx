@@ -1,7 +1,7 @@
 import {Link} from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/useCart';
 
 function ProductDetails() {
     const BASE_URL=import.meta.env.VITE_DJANGO_BASE_URL;
@@ -34,6 +34,12 @@ function ProductDetails() {
     if (error) return <div>Error: {error}</div>;
     if (!product) return <div>Product not found</div>;
 
+    const handleAddtoCart = () => {
+        if(!localStorage.getItem("access_token")){
+            window.location.href="/login";
+            return;
+        }addToCart(product.id);
+    };
   return (
     <div>
       
@@ -41,7 +47,7 @@ function ProductDetails() {
         <div className="min-h-screen bg-gray-100 py-10">
         <div className="max-w-6xl mx-auto bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row gap-6">
             <div className="md:w-1/2">
-                <img src={`${product.image}`} alt={product.name} className="w-full h-auto object-fit rounded-lg" />
+                <img src={product.image || `${BASE_URL}/media/product-placeholder.jpg`} alt={product.name} className="w-full h-auto object-fit rounded-lg" />
             </div>
             <div className="md:w-1/2 flex flex-col justify-between">
                 <div>
@@ -51,7 +57,7 @@ function ProductDetails() {
                 </div>
                 <div className="flex flex-col gap-4">
                     <Link to="/" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-center">Back to Product List</Link>
-                    <button onClick={() => addToCart(product)} className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Add to Cart</button>
+                    <button onClick={handleAddtoCart} className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Add to Cart</button>
                 </div>
             </div>
         </div>
