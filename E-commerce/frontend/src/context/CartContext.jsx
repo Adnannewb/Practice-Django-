@@ -118,13 +118,18 @@ const updateQuantity=async(id,quantity)=>{
     }
 };
 
+const clearCart=()=>{
+    setCartItems([]);
+    setTotal(0);
+}
+
 return(
     // <CartContext.Provider
     // value={{cartItems,addToCart,removeFromCart,updateQuantity
     // }}>
     //      {children} 
     // </CartContext.Provider>
-    <CartContext.Provider value={{cartItems,addToCart,removeFromCart,updateQuantity,total}}>
+    <CartContext.Provider value={{cartItems,addToCart,removeFromCart,updateQuantity,total,clearCart}}>
         {children}
     </CartContext.Provider>
 );

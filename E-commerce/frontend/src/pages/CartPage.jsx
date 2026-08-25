@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {useCart} from '../context/CartContext';
 function CartPage(){
     const BASEURL=import.meta.env.VITE_DJANGO_BASE_URL;
@@ -42,9 +43,12 @@ function CartPage(){
                 </div>
                 <div className="mt-6 flex justify-between items-center">
                     <p className="text-xl font-bold">Total: {totalPrice} Tk</p>
-                    <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                    {/* <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
                         Checkout
-                    </button>
+                    </button> */}
+                    <Link to="/checkout" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                        Proceed to Checkout
+                    </Link>
                 </div>
             </div>
         </div>
