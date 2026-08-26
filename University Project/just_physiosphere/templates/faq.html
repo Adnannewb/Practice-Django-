@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}FAQ{% endblock %}
+
+{% block extra_head %}
+<style>
+.faq-hero {
+    padding: 3rem 6vw 1.5rem;
+}
+.faq-hero h1 {
+    margin: 0 0 0.4rem;
+}
+.faq-hero p {
+    margin: 0;
+    color: var(--gray);
+    max-width: 640px;
+}
+
+/* FAQ list */
+.faq-section {
+    padding: 0 6vw 3rem;
+}
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.faq-item {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+.faq-question {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 0.98rem;
+    font-weight: 500;
+    text-align: left;
+}
+.faq-question-text {
+    flex: 1;
+    padding-right: 1rem;
+}
+.faq-toggle-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #6b7280;
+}
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    border-top: 1px solid #f3f4f6;
+    background: #fcfcfc;
+    transition: max-height 0.25s ease, padding-bottom 0.25s ease;
+    font-size: 0.92rem;
+    color: #4b5563;
+}
+.faq-answer-inner {
+    padding: 0.75rem 0 1rem;
+}
+.faq-item.active .faq-answer {
+    max-height: 500px; /* enough for content */
+    padding-bottom: 1rem;
+}
+.faq-item.active .faq-toggle-icon {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+}
+.faq-item.active .faq-toggle-icon span {
+    transform: rotate(45deg); /* plus -> x */
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="faq-hero">
+    <h1>Frequently asked questions</h1>
+    <p>
+        Quick answers about appointments, pricing, cancellations, and what to expect at JUST PhysioSphere.
+    </p>
+</section>
+
+<section class="faq-section">
+    <div class="faq-list">
+
+        <article class="faq-item">
+            <button class="faq-question" type="button">
+                <span class="faq-question-text">Do I need a doctor’s referral for physiotherapy?</span>
+                <span class="faq-toggle-icon"><span>+</span></span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>
+                        No, a doctor’s referral is not required for most appointments at JUST PhysioSphere.
+                        However, if you have recent imaging (X‑ray, MRI, etc.) or a prescription from a doctor,
+                        please bring it with you. For complex medical conditions we may coordinate with your
+                        physician for your safety.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item">
+            <button class="faq-question" type="button">
+                <span class="faq-question-text">What should I bring to my first appointment?</span>
+                <span class="faq-toggle-icon"><span>+</span></span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ul>
+                        <li>Comfortable clothing that allows you to move easily.</li>
+                        <li>Any medical reports, imaging, or prescriptions related to your condition.</li>
+                        <li>Your student ID (if you are using the student email discount).</li>
+                        <li>A list of medicines you are currently taking.</li>
+                    </ul>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item">
+            <button class="faq-question" type="button">
+                <span class="faq-question-text">How long is a typical session?</span>
+                <span class="faq-toggle-icon"><span>+</span></span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>
+                        Most sessions are between <strong>45–60 minutes</strong>, depending on your treatment type.
+                        The first visit includes a detailed assessment; follow‑up visits focus more on treatment and
+                        exercise. The exact duration you see in the Services page is the booking time reserved for you.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item">
+            <button class="faq-question" type="button">
+                <span class="faq-question-text">Can I reschedule or cancel an appointment?</span>
+                <span class="faq-toggle-icon"><span>+</span></span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>
+                        Yes. You can cancel or reschedule directly from your dashboard
+                        <strong>up to 24 hours before</strong> the appointment start time.
+                    </p>
+                    <ul>
+                        <li>If you paid online, refunds are processed automatically when you cancel in time.</li>
+                        <li>If it is less than 24 hours, the system will prevent changes and you may be charged.</li>
+                        <li>Therapists can also cancel with a refund if they become unavailable.</li>
+                    </ul>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item">
+            <button class="faq-question" type="button">
+                <span class="faq-question-text">How will I receive updates about my appointments?</span>
+                <span class="faq-toggle-icon"><span>+</span></span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>
+                        You will receive notifications via the email address used during registration for:
+                    </p>
+                    <ul>
+                        <li>New appointment confirmations.</li>
+                        <li>Rescheduled or cancelled appointments.</li>
+                        <li>Refund confirmations for online payments.</li>
+                    </ul>
+                    <p>
+                        You can always see the latest status in your dashboard under “Upcoming Appointments”.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item">
+            <button class="faq-question" type="button">
+                <span class="faq-question-text">How does student pricing work?</span>
+                <span class="faq-toggle-icon"><span>+</span></span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>
+                        If you register with an email ending in <code>@student.just.edu.bd</code>,
+                        the system automatically marks you as a student.
+                    </p>
+                    <ul>
+                        <li>First visit: <strong>200 TK</strong></li>
+                        <li>Each additional visit: <strong>100 TK</strong></li>
+                    </ul>
+                    <p>
+                        For all other emails, standard community pricing applies:
+                        300 TK for the first visit, then 200 TK for subsequent sessions.
+                        The correct amount is calculated automatically whenever you book.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const items = document.querySelectorAll('.faq-item');
+
+    items.forEach(item => {
+        const btn = item.querySelector('.faq-question');
+        btn.addEventListener('click', () => {
+            // Close others
+            items.forEach(i => {
+                if (i !== item) i.classList.remove('active');
+            });
+            // Toggle current
+            item.classList.toggle('active');
+        });
+    });
+});
+</script>
+{% endblock %}

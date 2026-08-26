@@ -1,0 +1,43 @@
+<form method="post"
+      class="form-card appointment-form"
+      data-available-slots-url="{% url 'api_available_slots' %}">
+    {% csrf_token %}
+    <input type="hidden" name="create_appointment" value="1">
+    {{ appointment_form.non_field_errors }}
+
+    <div class="field-row">
+        {{ appointment_form.therapist.label_tag }}{{ appointment_form.therapist }}
+        {{ appointment_form.therapist.errors }}
+    </div>
+
+    <div class="field-row">
+        {{ appointment_form.service.label_tag }}{{ appointment_form.service }}
+        {{ appointment_form.service.errors }}
+    </div>
+
+    <div class="field-row">
+        <label for="id_start_date">Date</label>
+        <input type="date" id="id_start_date">
+    </div>
+
+    <div class="field-row">
+        <label for="id_start_time_slot">Time slot</label>
+        <select id="id_start_time_slot">
+            <option value="">Select time</option>
+        </select>
+        <span id="slot-helper" class="helper-text"></span>
+    </div>
+
+    {{ appointment_form.start_time }}
+
+    <div class="field-row">
+        {{ appointment_form.payment_method.label_tag }}{{ appointment_form.payment_method }}
+        {{ appointment_form.payment_method.errors }}
+    </div>
+
+    <button type="submit" class="btn-cta">Request Appointment</button>
+    <p class="helper-text">
+        You can cancel or reschedule up to 24 hours before the appointment.
+        Cash payments require staff verification.
+    </p>
+</form>

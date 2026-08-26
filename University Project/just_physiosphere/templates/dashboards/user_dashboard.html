@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <aside class="sidebar">
+        <h2>Hello, {{ user.first_name|default:user.username }}</h2>
+        <p>Role: Patient{% if user.is_student %} (Student){% endif %}</p>
+        <nav class="sidebar-nav">
+            <a href="#upcoming">Upcoming Appointments</a>
+            <a href="#medical">Medical Card</a>
+            <a href="#history">Visit History</a>
+            <a href="#new-appointment" class="btn-cta small">New Appointment</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <section id="upcoming" class="card-section">
+            <h3>Upcoming Appointments</h3>
+            {% if upcoming_appointments %}
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>When</th><th>Therapist</th><th>Service</th><th>Status</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for a in upcoming_appointments %}
+                    <tr>
+                        <td>{{ a.start_time|date:"M d, Y H:i" }}</td>
+                        <td>{{ a.therapist.user.get_full_name }}</td>
+                        <td>{{ a.service.name }}</td>
+                        <td>{{ a.get_status_display }}</td>
+                        <td>
+                            {% if a.status != 'cancelled' and a.status != 'completed' %}
+                                <a href="{% url 'user_cancel_appointment' a.id %}" class="btn-outline small">Cancel</a>
+                                <a href="{% url 'user_reschedule_appointment' a.id %}" class="btn-outline small">Reschedule</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>No upcoming appointments yet.</p>
+            {% endif %}
+        </section>
+
+        <section id="new-appointment" class="card-section">
+            <h3>Request New Appointment</h3>
+            {% include "dashboards/_appointment_form.html" %}
+        </section>
+
+        <section id="medical" class="card-section">
+            <h3>Medical Card</h3>
+            <p>{{ medical_card.summary|default:"Your therapist will update your medical summary after each completed session." }}</p>
+        </section>
+
+        <section id="history" class="card-section">
+            <h3>Recent Visits</h3>
+            {% if visits %}
+            <ul class="visit-list">
+                {% for v in visits %}
+                <li>
+                    <div>
+                        <strong>{{ v.appointment.service.name }}</strong> with
+                        {{ v.appointment.therapist.user.get_full_name }}
+                        on {{ v.appointment.start_time|date:"M d, Y H:i" }}
+                    </div>
+                    <div class="visit-notes">{{ v.notes|default:"No notes yet." }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <p>No visit history yet.</p>
+            {% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('.appointment-form');
+    if (!form) {
+        console.warn('No appointment form found.');
+        return;
+    }
+
+    const therapistSelect = document.getElementById('id_therapist');
+    const serviceSelect = document.getElementById('id_service');
+    const hiddenStartField = document.getElementById('id_start_time');
+    const dateInput = document.getElementById('id_start_date');
+    const timeSelect = document.getElementById('id_start_time_slot');
+    const helper = document.getElementById('slot-helper');
+    const slotsApiUrl = form.getAttribute('data-available-slots-url');
+    const servicesApiUrl = "{% url 'api_therapist_services' %}";
+
+    if (!therapistSelect || !serviceSelect || !hiddenStartField ||
+        !dateInput || !timeSelect || !slotsApiUrl) {
+        console.warn('Slot picker: missing elements or API URL', {
+            therapistSelect, serviceSelect, hiddenStartField, dateInput, timeSelect, slotsApiUrl
+        });
+        return;
+    }
+
+    function resetSlots(message) {
+        timeSelect.innerHTML = '<option value="">Select time</option>';
+        hiddenStartField.value = '';
+        if (helper) helper.textContent = message || '';
+    }
+
+    // ---------- Load services for selected therapist ----------
+    function loadServicesForTherapist() {
+        const therapistId = therapistSelect.value;
+
+        // Clear service options
+        serviceSelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select service';
+        serviceSelect.appendChild(placeholder);
+
+        // Clear date/time
+        dateInput.value = '';
+        resetSlots('');
+
+        if (!therapistId) {
+            return;
+        }
+
+        const url = servicesApiUrl + '?therapist_id=' + encodeURIComponent(therapistId);
+        console.log('Requesting therapist services:', url);
+
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.error) {
+                    console.warn('therapist-services error:', data.error);
+                    return;
+                }
+                const services = data.services || [];
+                services.forEach(function (svc) {
+                    const opt = document.createElement('option');
+                    opt.value = svc.id;
+                    opt.textContent = svc.name;
+                    serviceSelect.appendChild(opt);
+                });
+            })
+            .catch(function (err) {
+                console.error('Error loading therapist services', err);
+            });
+    }
+
+    // ---------- Load time slots for therapist + service + date ----------
+    function loadSlots() {
+        const therapistId = therapistSelect.value;
+        const serviceId = serviceSelect.value;
+        const dateVal = dateInput.value;
+
+        resetSlots('');
+
+        if (!therapistId || !serviceId || !dateVal) {
+            return;
+        }
+
+        const params =
+            'therapist_id=' + encodeURIComponent(therapistId) +
+            '&service_id=' + encodeURIComponent(serviceId) +
+            '&date=' + encodeURIComponent(dateVal);
+
+        if (helper) helper.textContent = 'Loading available slots...';
+
+        const url = slotsApiUrl + '?' + params;
+        console.log('Requesting available slots:', url);
+
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.error) {
+                    console.warn('available-slots error:', data.error);
+                    resetSlots(data.error);
+                    return;
+                }
+
+                const slots = data.slots || [];
+                console.log('Received slots:', slots);
+                resetSlots('');
+                if (!slots.length) {
+                    if (helper) helper.textContent = 'No available time slots for the selected date.';
+                    return;
+                }
+                slots.forEach(function (slot) {
+                    const opt = document.createElement('option');
+                    opt.value = slot.start_iso;   // "YYYY-MM-DD HH:MM"
+                    opt.textContent = slot.label; // "9:00 AM - 10:00 AM"
+                    timeSelect.appendChild(opt);
+                });
+                if (helper) helper.textContent = 'Select an available time slot.';
+            })
+            .catch(function (err) {
+                console.error('Error loading slots', err);
+                resetSlots('Could not load time slots.');
+            });
+    }
+
+    therapistSelect.addEventListener('change', loadServicesForTherapist);
+    serviceSelect.addEventListener('change', loadSlots);
+    dateInput.addEventListener('change', loadSlots);
+
+    timeSelect.addEventListener('change', function () {
+        const iso = timeSelect.value;
+        hiddenStartField.value = iso; // sets the actual start_time for the form
+    });
+
+    // Initial load in case a therapist is pre-selected
+    loadServicesForTherapist();
+});
+</script>
+{% endblock %}

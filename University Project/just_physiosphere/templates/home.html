@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block extra_head %}
+<style>
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: center;
+    padding: 4rem 6vw;
+    background: #ffffff;
+}
+.hero-text h1 {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+}
+.hero-text p {
+    font-size: 1.05rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+.hero-image img {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.12);
+}
+.featured-logos {
+    padding: 1.5rem 6vw 3rem;
+}
+.featured-logos h4 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #777;
+    margin-bottom: 0.5rem;
+}
+.featured-logos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    align-items: center;
+}
+.featured-logos-grid img {
+    height: 28px;
+    opacity: 0.8;
+}
+.live-serial {
+    padding: 2rem 6vw 4rem;
+    background: #f7faf9;
+    border-top: 1px solid #edf2ef;
+}
+.live-serial-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+    gap: 1rem;
+}
+.live-serial-row {
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+.countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: #157f3d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <h1>Evidence-based physiotherapy for JUST students and beyond.</h1>
+        <p>
+            JUST PhysioSphere combines expert therapists, modern equipment, and data-driven care
+            to help you recover faster and move better – right on the JUST campus.
+        </p>
+        <div class="hero-actions">
+            <a href="{% if user.is_authenticated %}{% url 'dashboard_redirect' %}{% else %}{% url 'register' %}{% endif %}"
+               class="btn-cta">Request Appointment</a>
+            <a href="{% url 'services' %}" class="btn-outline">View Services</a>
+        </div>
+        <div class="hero-note">
+            <strong>Student pricing:</strong> First visit 200 TK, then 100 TK.
+            Non-students: first visit 300 TK, then 200 TK.
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'img/hero-physio.jpg' %}" alt="Physiotherapy session">
+    </div>
+</section>
+
+<section class="featured-logos">
+    <h4>Trusted by leading healthcare & academic partners</h4>
+    <div class="featured-logos-grid">
+        <img src="{% static 'img/logo1.jpg' %}" alt="Logo 1">
+        <img src="{% static 'img/logo2.jpg' %}" alt="Logo 2">
+        <img src="{% static 'img/logo3.jpg' %}" alt="Logo 3">
+        <img src="{% static 'img/logo4.jpg' %}" alt="Logo 4">
+        <img src="{% static 'img/logo5.jpg' %}" alt="Logo 5">
+    </div>
+</section>
+
+<section class="live-serial">
+    <h2>Live Queue – Next 5 Therapy Sessions</h2>
+    <p>Updated in real time. Please arrive 10 minutes before your session.</p>
+    <div class="live-serial-grid live-serial-header">
+        <strong>Patient & Therapist</strong>
+        <strong>Starts In</strong>
+        <strong>Start Time</strong>
+    </div>
+    <div id="live-serial-container"></div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function initLiveSerial(apiUrl) {
+    const container = document.getElementById('live-serial-container');
+    if (!container) return;
+
+    // Format time difference as:
+    //   "3 days 5 hours 45 minutes 12 seconds"
+    //   "5 hours 45 minutes 9 seconds"
+    //   "45 minutes 3 seconds"
+    //   "12 seconds"
+    //   "Now"
+    function formatTimeDiff(diffMs) {
+        if (diffMs <= 0) {
+            return 'Now';
+        }
+
+        const totalSeconds = Math.floor(diffMs / 1000);
+        const days = Math.floor(totalSeconds / (24 * 3600));
+        const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const parts = [];
+
+        if (days > 0) {
+            parts.push(days + ' day' + (days !== 1 ? 's' : ''));
+        }
+        if (hours > 0) {
+            parts.push(hours + ' hour' + (hours !== 1 ? 's' : ''));
+        }
+
+        // Minutes: if there are no days & hours, always show minutes (even 0).
+        // If there are days/hours, only show minutes when > 0.
+        if (minutes > 0 || (days === 0 && hours === 0)) {
+            parts.push(minutes + ' minute' + (minutes !== 1 ? 's' : ''));
+        }
+
+        // Seconds: if absolutely everything else is zero, still show seconds.
+        if (seconds > 0 || (days === 0 && hours === 0 && minutes === 0)) {
+            parts.push(seconds + ' second' + (seconds !== 1 ? 's' : ''));
+        }
+
+        return parts.join(' ');
+    }
+
+    function renderRows(appointments) {
+        container.innerHTML = '';
+
+        if (!appointments || appointments.length === 0) {
+            container.innerHTML = '<p>No upcoming sessions.</p>';
+            return;
+        }
+
+        appointments.forEach(appt => {
+            const row = document.createElement('div');
+            row.className = 'live-serial-row';
+
+            const label = document.createElement('div');
+            label.textContent = `${appt.patient} with ${appt.therapist}`;
+
+            const countdown = document.createElement('div');
+            countdown.className = 'countdown';
+
+            const startEl = document.createElement('div');
+            const startDate = new Date(appt.start_time);
+            startEl.textContent = startDate.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            row.appendChild(label);
+            row.appendChild(countdown);
+            row.appendChild(startEl);
+            container.appendChild(row);
+
+            function updateCountdown() {
+                const now = Date.now();
+                const diff = startDate.getTime() - now;
+                countdown.textContent = formatTimeDiff(diff);
+            }
+
+            updateCountdown();
+            // Include seconds, so update every 1 second.
+            setInterval(updateCountdown, 1000);
+        });
+    }
+
+    function fetchSerial() {
+        fetch(apiUrl)
+            .then(r => r.json())
+            .then(data => renderRows(data.appointments || []))
+            .catch(err => console.error('Live serial error', err));
+    }
+
+    fetchSerial();
+    // Refresh the list from the server every 30 seconds
+    setInterval(fetchSerial, 30000);
+}
+
+// Call after DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+    initLiveSerial('{% url "api_live_serial" %}');
+});
+</script>
+{% endblock %}

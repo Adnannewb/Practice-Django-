@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+<section class="page-section narrow">
+    <h1>Contact Us</h1>
+    {% if success %}
+        <div class="alert success">Thank you! Your message has been received.</div>
+    {% endif %}
+    <form method="post" class="form-card">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="field-row">
+            {{ form.name.label_tag }}{{ form.name }}
+            {{ form.name.errors }}
+        </div>
+        <div class="field-row">
+            {{ form.email.label_tag }}{{ form.email }}
+            {{ form.email.errors }}
+        </div>
+        <div class="field-row">
+            {{ form.subject.label_tag }}{{ form.subject }}
+            {{ form.subject.errors }}
+        </div>
+        <div class="field-row">
+            {{ form.message.label_tag }}{{ form.message }}
+            {{ form.message.errors }}
+        </div>
+        <button type="submit" class="btn-cta">Send Message</button>
+    </form>
+</section>
+{% endblock %}

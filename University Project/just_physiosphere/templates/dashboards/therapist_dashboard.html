@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block title %}Therapist Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <aside class="sidebar">
+        <h2>Therapist: {{ user.get_full_name }}</h2>
+
+        <!-- Photo display -->
+        {% if user.therapist_profile.photo %}
+            <div style="margin: 0.5rem 0;">
+                <img src="{{ user.therapist_profile.photo.url }}" alt="Therapist photo"
+                     style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+            </div>
+        {% elif user.therapist_profile.photo_url %}
+            <div style="margin: 0.5rem 0;">
+                <img src="{{ user.therapist_profile.photo_url }}" alt="Therapist photo"
+                     style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+            </div>
+        {% endif %}
+
+        {% if user.therapist_profile.services.all %}
+            <p>
+                <strong>Services:</strong><br>
+                {% for s in user.therapist_profile.services.all %}
+                    {{ s.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <nav class="sidebar-nav">
+            <a href="#today">Today's Schedule</a>
+            <a href="#upcoming">Upcoming</a>
+            <a href="#offline">Pending Cash Payments</a>
+            <a href="#profile">Profile</a>
+            <a href="#availability">Availability</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <!-- Today's schedule -->
+        <section id="today" class="card-section">
+            <h3>Today's Schedule</h3>
+            {% if todays_appointments %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for a in todays_appointments %}
+                        <tr>
+                            <td>{{ a.start_time|date:"H:i" }}</td>
+                            <td>{{ a.patient.get_full_name }}</td>
+                            <td>{{ a.service.name }}</td>
+                            <td>{{ a.get_status_display }}</td>
+                            <td>
+                                {% if not a.attended and a.status != 'cancelled' and a.status != 'refunded' %}
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="mark_completed" value="1">
+                                        <input type="hidden" name="appointment_id" value="{{ a.id }}">
+                                        <button class="btn-cta small">Mark Completed</button>
+                                    </form>
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="cancel_with_refund" value="1">
+                                        <input type="hidden" name="appointment_id" value="{{ a.id }}">
+                                        <button class="btn-outline small">Cancel + Refund</button>
+                                    </form>
+                                {% endif %}
+                                <a href="{% url 'therapist_edit_visit' a.id %}" class="btn-outline small">
+                                    Visit Notes
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No appointments today.</p>
+            {% endif %}
+        </section>
+
+        <!-- Upcoming appointments -->
+        <section id="upcoming" class="card-section">
+            <h3>Upcoming Appointments</h3>
+            {% if upcoming_appointments %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Patient</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for a in upcoming_appointments %}
+                        <tr>
+                            <td>{{ a.start_time|date:"M d, Y H:i" }}</td>
+                            <td>{{ a.patient.get_full_name }}</td>
+                            <td>{{ a.service.name }}</td>
+                            <td>{{ a.get_status_display }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No upcoming appointments.</p>
+            {% endif %}
+        </section>
+
+        <!-- Pending cash payments -->
+        <section id="offline" class="card-section">
+            <h3>Pending cash payments</h3>
+            {% if offline_appointments %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Patient</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for a in offline_appointments %}
+                        <tr>
+                            <td>{{ a.start_time|date:"M d, Y H:i" }}</td>
+                            <td>{{ a.patient.get_full_name }}</td>
+                            <td>{{ a.service.name }}</td>
+                            <td>{{ a.get_status_display }}</td>
+                            <td>
+                                <form method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="confirm_cash" value="1">
+                                    <input type="hidden" name="appointment_id" value="{{ a.id }}">
+                                    <button class="btn-cta small">Confirm Cash Received</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No pending cash payments.</p>
+            {% endif %}
+        </section>
+
+        <!-- Profile -->
+        <section id="profile" class="card-section">
+            <h3>Profile</h3>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="update_profile" value="1">
+                {% for field in profile_form %}
+                    <div class="field-row">
+                        {{ field.label_tag }}{{ field }}
+                        {% if field.help_text %}
+                            <p class="helper-text">{{ field.help_text }}</p>
+                        {% endif %}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <button class="btn-cta">Save Profile</button>
+            </form>
+        </section>
+
+        <!-- Availability / vacation -->
+        <section id="availability" class="card-section">
+            <h3>Unavailable / Vacation Days</h3>
+            <p>Select a range of dates to mark as unavailable. You can add multiple ranges; they will be stored as a list of dates.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="update_unavailable" value="1">
+
+                <div class="field-row">
+                    <label for="id_unavail_from">From</label>
+                    <input type="date" id="id_unavail_from">
+                </div>
+                <div class="field-row">
+                    <label for="id_unavail_to">To</label>
+                    <input type="date" id="id_unavail_to">
+                </div>
+                <button type="button" class="btn-outline small" id="btn_add_unavail">Add range</button>
+
+                <p class="helper-text" style="margin-top:1rem;">Current unavailable days:</p>
+                <ul id="unavail_list" class="visit-list"></ul>
+
+                <!-- Hidden JSON field - actual model field -->
+                <div style="display:none;">
+                    {{ unavailable_form.unavailable_dates }}
+                    {{ unavailable_form.unavailable_dates.errors }}
+                </div>
+
+                <button style="margin-top:1rem;" class="btn-outline">Update Unavailable Dates</button>
+            </form>
+        </section>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Manage unavailable_dates JSON via From/To date pickers
+    const hiddenField = document.getElementById('id_unavailable_dates');
+    const listEl = document.getElementById('unavail_list');
+    const fromInput = document.getElementById('id_unavail_from');
+    const toInput = document.getElementById('id_unavail_to');
+    const addBtn = document.getElementById('btn_add_unavail');
+
+    if (!hiddenField || !listEl || !fromInput || !toInput || !addBtn) {
+        return;
+    }
+
+    let dates = new Set();
+
+    function parseExisting() {
+        let raw = hiddenField.value || '[]';
+        try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                parsed.forEach(function (d) {
+                    if (typeof d === 'string') {
+                        dates.add(d);
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('Could not parse unavailable_dates JSON', e);
+        }
+    }
+
+    function renderList() {
+        listEl.innerHTML = '';
+        const arr = Array.from(dates).sort();
+        if (!arr.length) {
+            const li = document.createElement('li');
+            li.textContent = 'No unavailable days set.';
+            listEl.appendChild(li);
+        } else {
+            arr.forEach(function (d) {
+                const li = document.createElement('li');
+                li.textContent = d;
+                listEl.appendChild(li);
+            });
+        }
+        hiddenField.value = JSON.stringify(arr);
+    }
+
+    function addRange() {
+        const fromVal = fromInput.value;
+        const toVal = toInput.value || fromVal;
+
+        if (!fromVal) {
+            alert('Please choose a start date.');
+            return;
+        }
+        if (toVal < fromVal) {
+            alert('End date cannot be before start date.');
+            return;
+        }
+
+        let cur = new Date(fromVal);
+        const end = new Date(toVal);
+
+        while (cur <= end) {
+            const iso = cur.toISOString().slice(0, 10); // YYYY-MM-DD
+            dates.add(iso);
+            cur.setDate(cur.getDate() + 1);
+        }
+
+        renderList();
+    }
+
+    parseExisting();
+    renderList();
+    addBtn.addEventListener('click', addRange);
+});
+</script>
+{% endblock %}

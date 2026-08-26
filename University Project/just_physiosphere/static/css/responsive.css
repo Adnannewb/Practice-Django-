@@ -1,0 +1,35 @@
+@media (max-width: 960px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding-top: 2.5rem;
+    }
+}
+@media (max-width: 900px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+}
+@media (max-width: 768px) {
+    .site-header {
+        flex-wrap: wrap;
+        gap: 0.7rem;
+    }
+    .main-nav {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.6rem;
+    }
+}
+@media (max-width: 600px) {
+    .page-section {
+        padding: 2rem 1.25rem;
+    }
+    .live-serial-row,
+    .live-serial-grid {
+        grid-template-columns: 1fr;
+    }
+}
