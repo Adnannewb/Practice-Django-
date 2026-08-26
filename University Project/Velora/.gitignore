@@ -1,0 +1,31 @@
+venv/
+.venv/
+.puku/
+__pycache__/
+*.pyc
+*.pyo
+db.sqlite3
+db.sqlite3-journal
+.env
+media/
+staticfiles/
+
+# Python tooling
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Local IDE and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Runtime and temporary files
+*.log
+*.tmp
+*.swp

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Checkout — Velora{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="bg-white rounded-4 p-4 p-md-5" style="box-shadow:var(--velora-shadow)">
+        <h2 class="mb-3">Confirm and pay</h2>
+        <p class="text-muted">Transaction ID: <code>{{ payment.transaction_id }}</code></p>
+        <div class="row">
+          <div class="col-md-5"><img src="{% if rental.product.image %}{{ rental.product.image.url }}{% else %}{% static 'img/placeholder.svg' %}{% endif %}" class="img-fluid rounded-4" onerror="this.src='{% static 'img/placeholder.svg' %}'"/></div>
+          <div class="col-md-7">
+            <h5>{{ rental.product.name }}</h5>
+            <div class="spec-row"><span>Dates</span><strong>{{ rental.start_date }} → {{ rental.end_date }}</strong></div>
+            <div class="spec-row"><span>Days</span><strong>{{ rental.days }}</strong></div>
+            <div class="spec-row"><span>Rental fee</span><strong>৳{{ rental.rental_fee|intcomma }}</strong></div>
+            <div class="spec-row"><span>Security deposit</span><strong>৳{{ rental.security_deposit|intcomma }}</strong></div>
+            <div class="spec-row fs-5"><span>Total</span><strong style="color:var(--velora-rose)">৳{{ payment.amount|intcomma }}</strong></div>
+          </div>
+        </div>
+        <form method="post" class="mt-4">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-velora btn-lg w-100">
+            <i class="bi bi-credit-card-2-back"></i> Pay with SSLCommerz
+          </button>
+        </form>
+        <p class="small text-muted text-center mt-3">You will be redirected to the SSLCommerz secure payment gateway.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

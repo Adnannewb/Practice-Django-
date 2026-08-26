@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}{{ product.name }} — Velora{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <div class="product-hero-img">
+        <img id="mainImg" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/placeholder.svg' %}{% endif %}" alt="{{ product.name }}" onerror="this.src='{% static 'img/placeholder.svg' %}'"/>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/placeholder.svg' %}{% endif %}" class="thumb-img" onclick="document.getElementById('mainImg').src=this.src" onerror="this.src='{% static 'img/placeholder.svg' %}'"/>
+        {% if product.image_2 %}<img src="{{ product.image_2.url }}" class="thumb-img" onclick="document.getElementById('mainImg').src=this.src"/>{% endif %}
+        {% if product.image_3 %}<img src="{{ product.image_3.url }}" class="thumb-img" onclick="document.getElementById('mainImg').src=this.src"/>{% endif %}
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <span class="hero-badge">{{ product.category.name|default:"Velora Edit" }}</span>
+      <h1 class="mt-3">{{ product.name }}</h1>
+      <p class="text-muted">By <strong>{{ product.owner.username }}</strong></p>
+
+      <div class="d-flex align-items-center gap-3 my-3">
+        {% if product.is_on_sale %}
+          <span class="display-6 fw-bold text-muted text-decoration-line-through" style="font-size:1.4rem">৳{{ product.price_per_day|intcomma }}</span>
+          <span class="display-6 fw-bold" style="color:var(--velora-rose)">৳{{ product.discounted_price|intcomma }}</span>
+          <span class="discount-pill"><i class="bi bi-tag-fill"></i> −{{ product.discount_percent }}% OFF</span>
+        {% else %}
+          <span class="display-6 fw-bold" style="color:var(--velora-rose)">৳{{ product.price_per_day|intcomma }}</span>
+        {% endif %}
+        <span class="text-muted">per day</span>
+        {% if product.average_rating %}
+          <span class="stars"><i class="bi bi-star-fill"></i> {{ product.average_rating }} ({{ product.review_count }})</span>
+        {% endif %}
+      </div>
+
+      <p>{{ product.description|linebreaksbr }}</p>
+
+      <div class="bg-white rounded-4 p-3 my-4" style="box-shadow:var(--velora-shadow)">
+        <div class="spec-row"><span>Brand</span><strong>{{ product.brand|default:"—" }}</strong></div>
+        <div class="spec-row"><span>Size</span><strong>{{ product.get_size_display }}</strong></div>
+        <div class="spec-row"><span>Color</span><strong>{{ product.color|default:"—" }}</strong></div>
+        <div class="spec-row"><span>Condition</span><strong>{{ product.get_condition_display }}</strong></div>
+        <div class="spec-row"><span>Security deposit</span><strong>৳{{ product.security_deposit|intcomma }}</strong></div>
+        <div class="spec-row"><span>Units available</span><strong>{{ product.quantity }}</strong></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        {% if user == product.owner %}
+          <div class="alert alert-light w-100 mb-0 py-2 small"><i class="bi bi-person-badge"></i> This is your listing — manage it below.</div>
+        {% elif user.is_authenticated and user.can_rent %}
+          <a href="{% url 'rentals:book' product.slug %}" class="btn btn-velora btn-lg flex-grow-1">
+            <i class="bi bi-calendar2-heart"></i> Book this outfit
+          </a>
+        {% elif user.is_authenticated %}
+          <button class="btn btn-light btn-lg flex-grow-1" disabled>
+            <i class="bi bi-info-circle"></i> Your account is in lender-only mode
+          </button>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-velora btn-lg flex-grow-1">Login to book</a>
+        {% endif %}
+        {% if user == product.owner %}
+          <a href="{% url 'shop:product_edit' product.slug %}" class="btn btn-velora-outline"><i class="bi bi-pencil"></i></a>
+          <a href="{% url 'shop:product_delete' product.slug %}" class="btn btn-velora-outline"><i class="bi bi-trash"></i></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="row mt-5">
+    <div class="col-lg-8">
+      <h3 class="section-title">Reviews</h3>
+      {% if user.is_authenticated and user.is_customer %}
+        <a href="{% url 'reviews:add' product.slug %}" class="btn btn-velora-outline mb-3">
+          {% if user_has_reviewed %}Update your review{% else %}Write a review{% endif %}
+        </a>
+      {% endif %}
+      {% for r in reviews %}
+        <div class="bg-white rounded-4 p-3 mb-3" style="box-shadow:var(--velora-shadow)">
+          <div class="d-flex justify-content-between">
+            <strong>{{ r.customer.username }}</strong>
+            <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+          </div>
+          <p class="m-0 mt-1">{{ r.comment|default:"(no comment)" }}</p>
+          <small class="text-muted">{{ r.created_at|date:"M d, Y" }}</small>
+        </div>
+      {% empty %}
+        <p class="text-muted">No reviews yet — be the first.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if related %}
+  <div class="mt-5">
+    <h3 class="section-title">You may also love</h3>
+    <div class="row g-4">
+      {% for p in related %}
+        <div class="col-6 col-md-3">{% include "shop/_product_card.html" %}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

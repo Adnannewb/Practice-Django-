@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Rental #{{ rental.id }} — Velora{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="m-0">Rental #{{ rental.id }}</h1>
+    <span class="status-pill bg-{{ rental.get_status_color }}-subtle text-{{ rental.get_status_color }}">{{ rental.get_status_display }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="bg-white rounded-4 p-4" style="box-shadow:var(--velora-shadow)">
+        <div class="row">
+          <div class="col-md-4"><img src="{% if rental.product.image %}{{ rental.product.image.url }}{% else %}{% static 'img/placeholder.svg' %}{% endif %}" class="img-fluid rounded-4" onerror="this.src='{% static 'img/placeholder.svg' %}'"/></div>
+          <div class="col-md-8">
+            <h4 class="mb-1">{{ rental.product.name }}</h4>
+            <p class="text-muted m-0">Rented by <strong>{{ rental.customer.username }}</strong></p>
+            <p class="text-muted m-0">From seller <strong>{{ rental.product.owner.username }}</strong></p>
+            <a href="{{ rental.product.get_absolute_url }}" class="btn btn-velora-outline btn-sm mt-3">View product</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="bg-white rounded-4 p-4" style="box-shadow:var(--velora-shadow)">
+        <div class="spec-row"><span>Start date</span><strong>{{ rental.start_date }}</strong></div>
+        <div class="spec-row"><span>End date</span><strong>{{ rental.end_date }}</strong></div>
+        <div class="spec-row"><span>Total days</span><strong>{{ rental.days }}</strong></div>
+        <div class="spec-row"><span>Quantity</span><strong>{{ rental.quantity }}</strong></div>
+        <div class="spec-row"><span>Rental fee</span><strong>৳{{ rental.rental_fee|intcomma }}</strong></div>
+        <div class="spec-row"><span>Security deposit</span><strong>৳{{ rental.security_deposit|intcomma }}</strong></div>
+        <div class="spec-row fs-5"><span>Total</span><strong style="color:var(--velora-rose)">৳{{ rental.total_amount|intcomma }}</strong></div>
+
+        {% if rental.security_deposit %}
+          <hr class="my-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <strong class="small text-uppercase" style="letter-spacing:0.5px">Deposit settlement</strong>
+            {% if rental.is_deposit_settled %}
+              <span class="status-pill bg-success-subtle text-success"><i class="bi bi-check-circle-fill"></i> Settled</span>
+            {% else %}
+              <span class="status-pill bg-warning-subtle text-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+            {% endif %}
+          </div>
+          {% if rental.is_deposit_settled %}
+            <div class="deposit-row"><span>Refunded</span><strong class="text-success">৳{{ rental.deposit_refunded|intcomma }}</strong></div>
+            <div class="deposit-row"><span>Charged for damage</span><strong class="text-danger">৳{{ rental.deposit_deducted|intcomma }}</strong></div>
+            <div class="deposit-row"><span>Settled on</span><strong>{{ rental.deposit_settled_at|date:"d M Y, H:i" }}</strong></div>
+            {% if rental.deposit_note %}<div class="deposit-row"><span>Note</span><strong class="text-end" style="max-width:60%">{{ rental.deposit_note }}</strong></div>{% endif %}
+          {% elif rental.product.owner == user and rental.status == "returned" %}
+            <a href="{% url 'rentals:settle_deposit' rental.pk %}" class="btn btn-velora w-100 mt-2"><i class="bi bi-cash-coin"></i> Settle deposit</a>
+            <div class="form-text text-center">Refund or charge the ৳{{ rental.security_deposit|intcomma }} deposit.</div>
+          {% elif rental.customer == user and rental.status == "returned" %}
+            <p class="text-muted small mb-0"><i class="bi bi-info-circle"></i> Seller will settle the deposit once they inspect the item.</p>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        {% if rental.customer == user and rental.status == "pending" %}
+          <a href="{% url 'payments:checkout' rental.id %}" class="btn btn-velora"><i class="bi bi-credit-card"></i> Pay now</a>
+          <form action="{% url 'rentals:update_status' rental.id 'cancel' %}" method="post">{% csrf_token %}<button class="btn btn-velora-outline">Cancel</button></form>
+        {% endif %}
+        {% if rental.product.owner == user %}
+          {% if rental.status == "pending" %}
+            <form action="{% url 'rentals:update_status' rental.id 'approve' %}" method="post">{% csrf_token %}<button class="btn btn-velora"><i class="bi bi-check2-circle"></i> Approve</button></form>
+            <form action="{% url 'rentals:update_status' rental.id 'reject' %}" method="post">{% csrf_token %}<button class="btn btn-velora-outline">Reject</button></form>
+          {% elif rental.status == "approved" %}
+            <form action="{% url 'rentals:update_status' rental.id 'ship' %}" method="post">{% csrf_token %}<button class="btn btn-velora"><i class="bi bi-truck"></i> Mark active</button></form>
+          {% elif rental.status == "active" %}
+            <form action="{% url 'rentals:update_status' rental.id 'return' %}" method="post">{% csrf_token %}<button class="btn btn-velora"><i class="bi bi-arrow-return-left"></i> Mark returned</button></form>
+          {% elif rental.status == "returned" %}
+            <form action="{% url 'rentals:update_status' rental.id 'complete' %}" method="post">{% csrf_token %}<button class="btn btn-velora"><i class="bi bi-stars"></i> Complete</button></form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

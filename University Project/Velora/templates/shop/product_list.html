@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Browse — Velora{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+    <div>
+      <h1 class="m-0">The Wardrobe</h1>
+      <p class="text-muted m-0">{{ products|length }} outfit(s) ready to rent.</p>
+    </div>
+    {% if categories %}
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'shop:product_list' %}" class="category-chip {% if not current_category %}active{% endif %}" style="background:{% if not current_category %}var(--velora-plum);color:#fff;border-color:var(--velora-plum){% endif %}">All</a>
+        {% for c in categories %}
+          <a href="{% url 'shop:product_list' %}?category={{ c.slug }}" class="category-chip">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'shop:product_list' %}" class="category-chip {% if not sort %}active{% endif %}" style="{% if not sort %}background:var(--velora-plum);color:#fff;border-color:var(--velora-plum){% endif %}">Newest</a>
+    <a href="{% url 'shop:product_list' %}?sort=trending{% if current_category %}&category={{ current_category }}{% endif %}" class="category-chip {% if sort == 'trending' %}active{% endif %}" style="{% if sort == 'trending' %}background:var(--velora-plum);color:#fff;border-color:var(--velora-plum){% endif %}"><i class="bi bi-fire"></i> Trending</a>
+    <a href="{% url 'shop:product_list' %}?sort=deals{% if current_category %}&category={{ current_category }}{% endif %}" class="category-chip {% if sort == 'deals' %}active{% endif %}" style="{% if sort == 'deals' %}background:var(--velora-plum);color:#fff;border-color:var(--velora-plum){% endif %}"><i class="bi bi-tag-fill"></i> Hot deals</a>
+    <a href="{% url 'shop:product_list' %}?sort=price_low{% if current_category %}&category={{ current_category }}{% endif %}" class="category-chip {% if sort == 'price_low' %}active{% endif %}" style="{% if sort == 'price_low' %}background:var(--velora-plum);color:#fff;border-color:var(--velora-plum){% endif %}">Price ↑</a>
+    <a href="{% url 'shop:product_list' %}?sort=price_high{% if current_category %}&category={{ current_category }}{% endif %}" class="category-chip {% if sort == 'price_high' %}active{% endif %}" style="{% if sort == 'price_high' %}background:var(--velora-plum);color:#fff;border-color:var(--velora-plum){% endif %}">Price ↓</a>
+  </div>
+
+  {% if products %}
+    <div class="row g-4">
+      {% for p in products %}
+        <div class="col-6 col-md-4 col-lg-3">{% include "shop/_product_card.html" %}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-bag display-1 text-muted"></i>
+      <h4 class="mt-3">Nothing here yet</h4>
+      <p class="text-muted">Be the first to list a stunning piece in the {{ current_category|default:"" }} category.</p>
+      {% if user.is_authenticated and user.is_seller %}
+        <a href="{% url 'shop:product_create' %}" class="btn btn-velora">+ List an item</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

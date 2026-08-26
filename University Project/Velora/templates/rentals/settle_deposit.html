@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Settle deposit · Rental #{{ rental.pk }}{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 720px;">
+  <div class="mb-4">
+    <a href="{{ rental.get_absolute_url }}" class="text-muted small text-decoration-none">
+      <i class="bi bi-arrow-left"></i> Back to rental
+    </a>
+  </div>
+
+  <div class="bg-white rounded-4 p-4 p-md-5" style="box-shadow:var(--velora-shadow)">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div style="width:48px;height:48px;border-radius:14px;background:var(--velora-gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;">
+        <i class="bi bi-cash-coin"></i>
+      </div>
+      <div>
+        <h3 class="mb-1">Settle security deposit</h3>
+        <p class="text-muted m-0">Rental #{{ rental.pk }} · {{ rental.product.name }}</p>
+      </div>
+    </div>
+
+    <div class="bg-light rounded-3 p-3 mb-4">
+      <div class="deposit-row">
+        <span>Customer</span><strong>{{ rental.customer.username }}</strong>
+      </div>
+      <div class="deposit-row">
+        <span>Deposit collected</span><strong>৳{{ rental.security_deposit|intcomma }}</strong>
+      </div>
+      <div class="deposit-row">
+        <span>Rental period</span>
+        <strong>{{ rental.start_date }} → {{ rental.end_date }} ({{ rental.days }} days)</strong>
+      </div>
+    </div>
+
+    {% if rental.note %}
+      <div class="alert alert-light border-start border-3" style="border-left-color: var(--velora-rose) !important;">
+        <strong>Customer note:</strong> {{ rental.note }}
+      </div>
+    {% endif %}
+
+    <form method="post" class="mt-4">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label small fw-bold">Damage / loss charge (৳)</label>
+          {{ form.damage_amount }}
+          <div class="form-text">Amount kept to cover damage, stains, late return, etc.</div>
+          {% if form.damage_amount.errors %}
+            <div class="text-danger small">{{ form.damage_amount.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold">Amount refunded to customer (৳)</label>
+          {{ form.refunded_amount }}
+          <div class="form-text">Default = full deposit. Damage + refund must not exceed ৳{{ rental.security_deposit|intcomma }}.</div>
+          {% if form.refunded_amount.errors %}
+            <div class="text-danger small">{{ form.refunded_amount.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+        <div class="col-12">
+          <label class="form-label small fw-bold">Internal note (visible to seller & customer)</label>
+          {{ form.note }}
+          {% if form.note.errors %}
+            <div class="text-danger small">{{ form.note.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger mt-3">{{ form.non_field_errors|join:", " }}</div>
+      {% endif %}
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <a href="{{ rental.get_absolute_url }}" class="btn btn-light">Cancel</a>
+        <button type="submit" class="btn btn-velora">
+          <i class="bi bi-check-circle"></i> Confirm settlement
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
