@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}My Rentals — Velora{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <h1 class="mb-4">My rentals</h1>
+  {% if rentals %}
+    <div class="table-responsive">
+      <table class="table table-clean align-middle">
+        <thead><tr><th>#</th><th>Item</th><th>Dates</th><th>Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for r in rentals %}
+            <tr>
+              <td>#{{ r.id }}</td>
+              <td><a href="{{ r.get_absolute_url }}" class="text-decoration-none">{{ r.product.name }}</a></td>
+              <td>{{ r.start_date }} → {{ r.end_date }}</td>
+              <td>৳{{ r.total_amount|intcomma }}</td>
+              <td><span class="status-pill bg-{{ r.get_status_color }}-subtle text-{{ r.get_status_color }}">{{ r.get_status_display }}</span></td>
+              <td><a href="{{ r.get_absolute_url }}" class="btn btn-sm btn-velora-outline">Open</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">No rentals yet.</p>
+    <a href="{% url 'shop:product_list' %}" class="btn btn-velora">Browse the wardrobe</a>
+  {% endif %}
+</section>
+{% endblock %}

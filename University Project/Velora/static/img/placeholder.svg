@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="500">
+      <stop offset="0%" stop-color="#f4eef9"/>
+      <stop offset="100%" stop-color="#fce7e3"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg)"/>
+  <g transform="translate(140 170)" fill="none" stroke="#5b2a86" stroke-width="2">
+    <path d="M0 20 L30 0 L80 0 L110 20 L110 140 L0 140 Z"/>
+    <circle cx="55" cy="80" r="20"/>
+  </g>
+  <text x="200" y="360" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-size="22" fill="#5b2a86">Velora</text>
+</svg>

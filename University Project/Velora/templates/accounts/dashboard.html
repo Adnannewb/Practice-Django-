@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Dashboard — Velora{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="m-0">Hi, {{ user_obj.username }} ✨</h1>
+      <p class="text-muted m-0">
+        Role: <strong>{{ user_obj.get_role_display }}</strong>
+        {% if user_obj.can_rent %}
+          · You can rent from the community
+        {% else %}
+          · Lender-only mode
+        {% endif %}
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'accounts:profile' %}" class="btn btn-velora-outline">Edit profile</a>
+      <a href="{% url 'shop:product_create' %}" class="btn btn-velora">+ List new item</a>
+    </div>
+  </div>
+
+  {% if user_obj.can_rent and deposit_summary %}
+    <h3 class="section-title">Deposit summary</h3>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--velora-gold);color:#fff;"><i class="bi bi-safe"></i></div>
+          <div>
+            <div class="stat-label">Total deposited</div>
+            <div class="stat-value">৳{{ deposit_summary.total_deposit|intcomma }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--velora-mint);color:#fff;"><i class="bi bi-arrow-down-circle"></i></div>
+          <div>
+            <div class="stat-label">Refunded</div>
+            <div class="stat-value">৳{{ deposit_summary.total_refunded|intcomma }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--velora-rose);color:#fff;"><i class="bi bi-exclamation-triangle"></i></div>
+          <div>
+            <div class="stat-label">Charged for damage</div>
+            <div class="stat-value">৳{{ deposit_summary.total_charged|intcomma }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if user_obj.can_rent %}
+    <h3 class="section-title">Your rentals</h3>
+    {% if rentals %}
+      <div class="table-responsive">
+        <table class="table table-clean align-middle">
+          <thead><tr><th>#</th><th>Item</th><th>Dates</th><th>Total</th><th>Deposit</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for r in rentals %}
+              <tr>
+                <td>#{{ r.id }}</td>
+                <td><a href="{{ r.get_absolute_url }}" class="text-decoration-none">{{ r.product.name }}</a></td>
+                <td>{{ r.start_date }} → {{ r.end_date }}</td>
+                <td>৳{{ r.total_amount|intcomma }}</td>
+                <td>
+                  {% if r.is_deposit_settled %}
+                    {% if r.deposit_refunded %}<span class="text-success">+৳{{ r.deposit_refunded|intcomma }}</span>{% endif %}
+                    {% if r.deposit_deducted %}<span class="text-danger ms-1">−৳{{ r.deposit_deducted|intcomma }}</span>{% endif %}
+                  {% elif r.security_deposit %}
+                    <span class="text-muted small">৳{{ r.security_deposit|intcomma }} pending</span>
+                  {% else %}—{% endif %}
+                </td>
+                <td><span class="status-pill bg-{{ r.get_status_color }}-subtle text-{{ r.get_status_color }}">{{ r.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">No rentals yet — <a href="{% url 'shop:product_list' %}">browse the wardrobe</a>.</p>
+    {% endif %}
+  {% endif %}
+
+  <h3 class="section-title mt-4">Your listings</h3>
+  {% if products %}
+    <div class="table-responsive">
+      <table class="table table-clean align-middle">
+        <thead><tr><th>Item</th><th>Category</th><th>Price/day</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for p in products %}
+            <tr>
+              <td><a href="{{ p.get_absolute_url }}" class="text-decoration-none">{{ p.name }}</a></td>
+              <td>{{ p.category.name|default:"—" }}</td>
+              <td>৳{{ p.price_per_day|intcomma }}</td>
+              <td>{% if p.is_available %}<span class="status-pill bg-success-subtle text-success">Live</span>{% else %}<span class="status-pill bg-secondary-subtle text-secondary">Hidden</span>{% endif %}</td>
+              <td class="text-end">
+                <a href="{% url 'shop:product_edit' p.slug %}" class="btn btn-sm btn-velora-outline">Edit</a>
+                <a href="{% url 'shop:product_delete' p.slug %}" class="btn btn-sm btn-velora-outline">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">You haven't listed anything yet. <a href="{% url 'shop:product_create' %}">List your first outfit →</a></p>
+  {% endif %}
+</section>
+{% endblock %}

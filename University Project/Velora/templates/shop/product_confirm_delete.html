@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ product.name }} — Velora{% endblock %}
+{% block content %}
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+      <h2>Remove this listing?</h2>
+      <p class="text-muted">"{{ product.name }}" will be permanently removed from Velora.</p>
+      <form method="post" class="d-flex justify-content-center gap-2 mt-4">
+        {% csrf_token %}
+        <a href="{{ product.get_absolute_url }}" class="btn btn-velora-outline">Cancel</a>
+        <button type="submit" class="btn btn-velora">Yes, delete</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
