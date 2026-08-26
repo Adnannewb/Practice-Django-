@@ -1,0 +1,50 @@
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django local files
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+
+# Test and tool caches
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Logs and local runtime files
+*.log
+*.pid
+
+# Packaging/build output
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE and operating-system files
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.DS_Store
+Thumbs.db
+desktop.ini
