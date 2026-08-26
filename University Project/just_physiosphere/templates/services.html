@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Services{% endblock %}
+
+{% block extra_head %}
+<style>
+.services-hero {
+    padding: 3rem 6vw 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+}
+.services-hero-text h1 {
+    margin: 0 0 0.5rem;
+}
+.services-hero-text p {
+    margin: 0;
+    color: var(--gray);
+    max-width: 640px;
+}
+.services-hero-cta {
+    white-space: nowrap;
+}
+
+/* Therapist cards */
+.services-therapists {
+    padding: 0 6vw 2.5rem;
+}
+.therapist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+.therapist-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.therapist-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.therapist-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e5e7eb;
+    flex-shrink: 0;
+}
+.therapist-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.therapist-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+.therapist-credentials {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0.15rem 0;
+}
+.therapist-specialization {
+    font-size: 0.9rem;
+    color: var(--green-dark);
+    font-weight: 500;
+    margin: 0;
+}
+.therapist-body {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin-bottom: 0.75rem;
+}
+.therapist-meta {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+.therapist-footer {
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+/* Service catalog */
+.service-catalog {
+    border-top: 1px solid var(--border);
+    padding: 2rem 6vw 3rem;
+}
+.service-catalog h2 {
+    margin-top: 0;
+}
+.service-intro {
+    font-size: 0.95rem;
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+.service-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.service-row {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) auto;
+    align-items: center;
+    gap: 1rem;
+}
+.service-row h3 {
+    margin: 0 0 0.2rem;
+    font-size: 0.98rem;
+}
+.service-row p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+.service-row-right {
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--gray);
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .services-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .service-row {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+    .service-row-right {
+        text-align: left;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="services-hero">
+    <div class="services-hero-text">
+        <h1>Our therapists &amp; services</h1>
+        <p>
+            Every therapist at JUST PhysioSphere is licensed, experienced, and committed to one-on-one care.
+            Browse their profiles and the services they provide.
+        </p>
+    </div>
+    <div class="services-hero-cta">
+        <a href="{% if user.is_authenticated %}{% url 'dashboard_redirect' %}{% else %}{% url 'register' %}{% endif %}"
+           class="btn-cta">
+            Request an Appointment
+        </a>
+    </div>
+</section>
+
+<section class="services-therapists">
+    <div class="therapist-grid">
+        {% for t in therapists %}
+        <article class="therapist-card">
+            <div class="therapist-header">
+                <div class="therapist-avatar">
+                    {% if t.photo_url %}
+                        <img src="{{ t.photo_url }}" alt="{{ t.user.get_full_name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/80" alt="{{ t.user.get_full_name }}">
+                    {% endif %}
+                </div>
+                <div>
+                    <h3>Dr. {{ t.user.get_full_name }}</h3>
+                    <p class="therapist-credentials">{{ t.qualifications }}</p>
+                    <p class="therapist-specialization">{{ t.specialization }}</p>
+                </div>
+            </div>
+            <div class="therapist-body">
+                {{ t.bio|default:"Experienced physiotherapist at JUST PhysioSphere providing personalized one-on-one care." }}
+            </div>
+            <div class="therapist-meta">
+                Daily capacity: {{ t.daily_limit }} patients
+            </div>
+            <div class="therapist-footer">
+                <a href="{% if user.is_authenticated %}{% url 'dashboard_redirect' %}{% else %}{% url 'register' %}{% endif %}"
+                   class="btn-outline small">
+                    Book with {{ t.user.first_name }}
+                </a>
+            </div>
+        </article>
+        {% empty %}
+        <p>No therapists have been added yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="service-catalog">
+    <h2>Service catalog</h2>
+    <p class="service-intro">
+        Session length may vary based on your condition. A full assessment is included in your first visit.
+    </p>
+
+    <div class="service-list">
+        {% for s in services %}
+        <article class="service-row">
+            <div>
+                <h3>{{ s.name }}</h3>
+                <p>{{ s.description|default:"Detailed description coming soon." }}</p>
+            </div>
+            <div class="service-row-right">
+                {{ s.duration_minutes }} min
+            </div>
+        </article>
+        {% empty %}
+        <p>No services are configured yet. Please log in as admin and add services.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

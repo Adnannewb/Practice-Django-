@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Visit Notes{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <aside class="sidebar">
+        <h2>Visit details</h2>
+        <p>
+            <strong>Patient:</strong> {{ appointment.patient.get_full_name }}<br>
+            <strong>Service:</strong> {{ appointment.service.name }}<br>
+            <strong>Date &amp; time:</strong> {{ appointment.start_time|date:"M d, Y H:i" }}
+        </p>
+        <a href="{% url 'therapist_dashboard' %}" class="btn-outline small">Back to dashboard</a>
+    </aside>
+
+    <div class="dashboard-main">
+        <section class="card-section">
+            <h3>Visit notes &amp; medical summary</h3>
+            <form method="post" enctype="multipart/form-data" class="form-card">
+                {% csrf_token %}
+                {{ visit_form.non_field_errors }}
+
+                <!-- Visit fields: notes, attachment, signed -->
+                {% for field in visit_form %}
+                    <div class="field-row">
+                        {{ field.label_tag }}{{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+
+                <hr style="margin:1.2rem 0; border:none; border-top:1px solid #e5e7eb;">
+
+                <!-- Medical card summary -->
+                <div class="field-row">
+                    <label for="id_medical_summary">Medical card summary</label>
+                    <textarea id="id_medical_summary"
+                              name="medical_summary"
+                              rows="6">{{ medical_card.summary }}</textarea>
+                </div>
+                <p class="helper-text">
+                    This summary is visible to the patient in their dashboard as part of their medical card.
+                    Use it for key diagnoses, progress, and long‑term notes.
+                </p>
+
+                <button class="btn-cta">Save visit &amp; summary</button>
+            </form>
+        </section>
+    </div>
+</section>
+{% endblock %}

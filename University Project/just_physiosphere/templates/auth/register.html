@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card">
+        <h1>Create Your Account</h1>
+        <p class="pricing-note">
+            <strong>Pricing rules:</strong><br>
+            Students (<code>@student.just.edu.bd</code>): first visit 200 TK, then 100 TK per visit.<br>
+            Non-students: first visit 300 TK, then 200 TK per visit.
+        </p>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div class="field-row">
+                    {{ field.label_tag }}{{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-cta">Register</button>
+        </form>
+        <p class="auth-alt">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+</section>
+{% endblock %}

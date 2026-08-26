@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+
+{% block extra_head %}
+<style>
+.about-hero {
+    padding: 3rem 6vw 1.5rem;
+}
+.about-hero h1 {
+    margin: 0 0 0.4rem;
+}
+.about-hero p {
+    margin: 0;
+    color: var(--gray);
+    max-width: 720px;
+}
+
+/* Card layout */
+.about-grid {
+    padding: 0 6vw 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+.about-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    padding: 1.5rem 1.75rem;
+    font-size: 0.95rem;
+}
+.about-card h3 {
+    margin-top: 0;
+}
+.about-card p {
+    margin: 0.4rem 0;
+}
+.about-card ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+}
+.about-card li {
+    margin-bottom: 0.25rem;
+}
+
+/* Section grouping */
+.about-grid-top {
+    margin-bottom: 1rem;
+}
+
+/* Small text helpers */
+.about-meta {
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <h1>About JUST PhysioSphere</h1>
+    <p>
+        A university-based center dedicated to restoring movement, independence, and quality of life.
+    </p>
+</section>
+
+<section class="about-grid about-grid-top">
+    <article class="about-card">
+        <h3>Our history</h3>
+        <p>
+            JUST PhysioSphere was founded as a collaborative initiative between the Department of Physiotherapy and Rehabilitation and the Medical Center of Jashore University of Science and Technology.
+        </p>
+        <p>
+            What began as a small clinic serving campus staff and students has grown into a comprehensive
+            rehabilitation center with multiple specialties, research collaborations, and community outreach programs.
+        </p>
+
+        <h3>Mission &amp; vision</h3>
+        <p>
+            Our mission is to provide safe, accessible, and evidence-based physiotherapy that empowers patients to
+            take an active role in their recovery.
+        </p>
+        <ul>
+            <li>Deliver excellent patient‑centered care.</li>
+            <li>Advance physiotherapy practice through research.</li>
+            <li>Develop the next generation of rehabilitation leaders.</li>
+        </ul>
+    </article>
+
+    <article class="about-card">
+        <h3>Chairman’s message</h3>
+        <p>
+            “Movement is not just about muscles and joints; it is about dignity, participation, and joy. At JUST
+            Physiotherapy center we treat every patient with the same care we would offer to our own families.
+        </p>
+        <p>
+            Our therapists are handpicked for their clinical expertise, curiosity, and kindness. We continuously
+            review our protocols against the latest research to make sure that every visit moves you closer to your
+            goals.”
+        </p>
+        <p>
+            <strong>Dr. Ehsanur Rahman</strong><br>
+            Assistant Professor & Chairman<br>
+            chairman.ptr@just.edu.bd<br>
+            +8801716 062263
+        </p>
+    </article>
+</section>
+
+<section class="about-grid">
+    <article class="about-card">
+        <h3>Clinic details</h3>
+        <p><strong>Location:</strong><br>
+            Third Floor, Dr. M.R Khan Medical Center<br>
+            Jashore University of Science and Technology.<br>
+            Jashore 7408, Bangladesh
+        </p>
+        <p><strong>Clinic hours:</strong><br>
+            <!-- Saturday – Thursday: 8:30 AM – 8:00 PM<br> -->
+             Everyday: 9:00 AM – 11:00 PM<br>
+            <!-- Friday: Closed -->
+        </p>
+        <p><strong>Facilities:</strong></p>
+        <ul>
+            <li>Private treatment rooms and gym space.</li>
+            <li>Electrotherapy, ultrasound, and traction equipment.</li>
+            <li>Gait training and balance assessment tools.</li>
+            <li>On-site imaging and medical consultation.</li>
+        </ul>
+    </article>
+
+    <article class="about-card">
+        <h3>Approach to care</h3>
+        <p>
+            We follow an active, education‑focused approach. Instead of passive modalities alone, we emphasize
+            therapeutic exercise, movement education, and self‑management strategies.
+        </p>
+        <p>At each visit you will know:</p>
+        <ul>
+            <li>Your diagnosis and the factors contributing to it.</li>
+            <li>The plan for today’s session and upcoming visits.</li>
+            <li>What you can do at home to speed up your recovery.</li>
+        </ul>
+        <p class="about-meta">
+            Our goal is for every patient to leave the clinic with more confidence, less pain, and a clear roadmap.
+        </p>
+    </article>
+</section>
+{% endblock %}

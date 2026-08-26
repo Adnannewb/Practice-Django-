@@ -1,0 +1,11 @@
+/* Additional dashboard fine-tuning */
+
+.dashboard-main h3 {
+    margin-top: 0;
+}
+.dashboard-main section + section {
+    margin-top: 1.8rem;
+}
+.sidebar nav a.btn-cta.small {
+    margin-top: 1rem;
+}
