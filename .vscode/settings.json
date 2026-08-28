@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "E:\\Django Projects\\employee_api\\venv\\Lib\\site-packages"
+    ]
+}
