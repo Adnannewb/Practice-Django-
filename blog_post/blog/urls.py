@@ -1,6 +1,6 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from .import views
+from . import views
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 
 router=DefaultRouter()
 router.register('post',views.PostViewset,basename='post')
+router.register('comments', views.CommentViewSet, basename='comments')
 
 
 urlpatterns = [
