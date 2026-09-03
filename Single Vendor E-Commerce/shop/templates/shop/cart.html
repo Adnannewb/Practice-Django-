@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Cart | E-Shop{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+        <span class="badge rounded-pill text-bg-light border px-3 py-2 mb-2">Shopping Cart</span>
+        <h1 class="display-6 fw-bold mb-1">Your cart</h1>
+        <p class="text-muted-2 mb-0">Review items, adjust quantities, and continue to checkout.</p>
+    </div>
+    <div class="badge rounded-pill text-bg-primary px-3 py-2 fs-6">{{ cart.get_total_item }} item{{ cart.get_total_item|pluralize }}</div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="hero-shell p-3 p-md-4">
+            <div class="fw-semibold fs-5 mb-3">Your items</div>
+            {% for item in cart.items.all %}
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-3 py-3 {% if not forloop.last %}border-bottom{% endif %}">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="90" height="90" class="rounded-4 shadow-sm" style="object-fit: cover;">
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">{{ item.product.name }}</h5>
+                            <div class="text-muted-2 small mb-2">{{ item.product.category.name }}</div>
+                            <a href="{% url 'shop:product_detail' item.product.slug %}" class="small text-decoration-none">View details</a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 ms-md-auto">
+                        <strong>৳{{ item.product.price }}</strong>
+                        <form action="{% url 'shop:cart_update' item.product.id %}" method="post" class="d-flex align-items-center gap-2">
+                            {% csrf_token %}
+                            <input type="number" min="1" name="quantity" value="{{ item.quantity }}" class="form-control rounded-pill" style="width: 90px;">
+                            <button type="submit" class="btn btn-outline-dark rounded-pill">Update</button>
+                        </form>
+                        <strong>৳{{ item.get_cost }}</strong>
+                        <a href="{% url 'shop:cart_remove' item.product.id %}" class="btn btn-outline-danger rounded-circle" style="width: 44px; height: 44px; display: grid; place-items: center;">✕</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5">
+                    <h4 class="fw-bold">Your cart is empty</h4>
+                    <p class="text-muted-2 mb-4">Browse the catalog and add something you like.</p>
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-brand rounded-pill px-4 py-3">Continue shopping</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="hero-shell p-4 p-md-5 sticky-lg-top" style="top: 6.5rem;">
+            <h2 class="h4 fw-bold mb-4">Order summary</h2>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal</span>
+                <strong>৳{{ cart.get_total_price }}</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Shipping</span>
+                <strong class="text-success">Free</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Tax</span>
+                <strong>Calculated at checkout</strong>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="h5 fw-bold mb-0">Total</span>
+                <span class="h4 fw-bold text-primary mb-0">৳{{ cart.get_total_price }}</span>
+            </div>
+            <a href="{% url 'shop:checkout' %}" class="btn btn-brand w-100 rounded-pill py-3 fw-semibold mb-3">Proceed to Checkout</a>
+            <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark w-100 rounded-pill py-3 fw-semibold">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

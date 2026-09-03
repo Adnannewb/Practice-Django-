@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}My Account | E-Shop{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <span class="badge rounded-pill text-bg-light border px-3 py-2 mb-2">Account</span>
+    <h1 class="display-6 fw-bold mb-2">My Account</h1>
+    <p class="text-muted-2 mb-0">Manage your profile and view your order history.</p>
+</div>
+
+<div class="row g-4">
+    <aside class="col-12 col-lg-3">
+        <div class="hero-shell p-3 p-md-4 mb-4">
+            <div class="fw-bold mb-3">Account Navigation</div>
+            <div class="list-group list-group-flush rounded-4 overflow-hidden">
+                <a href="{% url 'shop:profile' %}" class="list-group-item list-group-item-action {% if not order_history_active %}active{% endif %}">Profile Information</a>
+                <a href="{% url 'shop:profile' %}?tab=orders" class="list-group-item list-group-item-action {% if order_history_active %}active{% endif %}">Order History</a>
+                <a href="{% url 'shop:logout' %}" class="list-group-item list-group-item-action text-danger">Logout</a>
+            </div>
+        </div>
+
+        <div class="hero-shell p-4 text-center">
+            <div class="rounded-circle bg-primary text-white d-inline-grid place-items-center mb-3" style="width: 110px; height: 110px; font-size: 2rem; font-weight: 700;">{{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|default:''|upper }}</div>
+            <h4 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h4>
+            <div class="text-muted-2">{{ user.email }}</div>
+        </div>
+    </aside>
+
+    <section class="col-12 col-lg-9">
+        <div class="hero-shell p-4 p-md-5 mb-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h2 class="h4 fw-bold mb-0">Personal Information</h2>
+                <span class="badge text-bg-light border">Member since {{ user.date_joined|date:'M d, Y' }}</span>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="text-muted-2 small mb-1">Full Name</div>
+                    <div class="fs-5 fw-semibold">{{ user.get_full_name|default:'Not set' }}</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted-2 small mb-1">Username</div>
+                    <div class="fs-5 fw-semibold">{{ user.username }}</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted-2 small mb-1">Email Address</div>
+                    <div class="fs-5 fw-semibold">{{ user.email|default:'Not set' }}</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted-2 small mb-1">Member Since</div>
+                    <div class="fs-5 fw-semibold">{{ user.date_joined|date:'F j, Y' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="hero-shell p-4 text-center h-100">
+                    <div class="display-6 fw-bold text-primary">{{ orders.count }}</div>
+                    <div class="text-muted-2">Total Orders</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="hero-shell p-4 text-center h-100">
+                    <div class="display-6 fw-bold text-primary">{{ completed_orders }}</div>
+                    <div class="text-muted-2">Completed Orders</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="hero-shell p-4 text-center h-100">
+                    <div class="display-6 fw-bold text-primary">৳{{ total_spent }}</div>
+                    <div class="text-muted-2">Total Spent</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-shell p-4 p-md-5 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <h2 class="h4 fw-bold mb-0">Order History</h2>
+                <span class="badge text-bg-light border">{{ orders.count }} order{{ orders.count|pluralize }}</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td class="fw-semibold">#{{ order.id }}</td>
+                                <td>{{ order.created|date:'M d, Y' }}</td>
+                                <td><span class="badge rounded-pill {% if order.paid %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ order.status|title }}</span></td>
+                                <td class="fw-semibold">৳{{ order.get_total_price }}</td>
+                                <td class="text-end"><a href="{% url 'shop:order_detail' order.id %}" class="btn btn-brand btn-sm rounded-pill px-3">View Details</a></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted-2">Place your first order and it will appear here.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

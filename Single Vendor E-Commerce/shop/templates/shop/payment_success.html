@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Success | E-Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="hero-shell p-4 p-md-5 text-center shadow-sm">
+            <div class="mx-auto mb-4 d-grid place-items-center rounded-circle bg-success-subtle text-success" style="width: 96px; height: 96px; font-size: 3rem;">✓</div>
+            <h1 class="display-6 fw-bold mb-3">Payment Successful!</h1>
+            <p class="text-muted-2 mb-3">Thank you for your purchase. Your order #{{ order.id }} has been confirmed.</p>
+            <p class="mb-4">A confirmation email has been sent to <strong>{{ order.email }}</strong>.</p>
+            <div class="bg-white border rounded-4 p-4 mb-4 text-start">
+                <div class="row g-3 text-center text-md-start">
+                    <div class="col-md-4"><div class="text-muted-2 small">Order ID</div><div class="fw-semibold">#{{ order.id }}</div></div>
+                    <div class="col-md-4"><div class="text-muted-2 small">Status</div><div class="fw-semibold text-success">{{ order.status }}</div></div>
+                    <div class="col-md-4"><div class="text-muted-2 small">Transaction</div><div class="fw-semibold">{{ order.transaction_id }}</div></div>
+                </div>
+            </div>
+            <div class="alert alert-success border-0 rounded-4 mb-4">We have marked the order as paid and sent a confirmation email.</div>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="{% url 'shop:profile' %}" class="btn btn-brand rounded-pill px-4 py-3 fw-semibold">View Your Orders</a>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark rounded-pill px-4 py-3 fw-semibold">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

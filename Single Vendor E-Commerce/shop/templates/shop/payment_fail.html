@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Failed | E-Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="hero-shell p-4 p-md-5 text-center shadow-sm">
+            <div class="mx-auto mb-4 d-grid place-items-center rounded-circle bg-danger-subtle text-danger" style="width: 96px; height: 96px; font-size: 3rem;">!</div>
+            <h1 class="display-6 fw-bold mb-3">Payment failed</h1>
+            <p class="text-muted-2 mb-4">We could not complete the payment for your order. You can try again from checkout.</p>
+            {% if order %}
+                <div class="bg-white border rounded-4 p-4 mb-4 text-start">
+                    <div class="row g-3">
+                        <div class="col-md-4"><div class="text-muted-2 small">Order ID</div><div class="fw-semibold">#{{ order.id }}</div></div>
+                        <div class="col-md-4"><div class="text-muted-2 small">Status</div><div class="fw-semibold text-danger">{{ order.status }}</div></div>
+                        <div class="col-md-4"><div class="text-muted-2 small">Total</div><div class="fw-semibold">৳{{ order.get_total_price }}</div></div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="alert alert-danger border-0 rounded-4 mb-4">If the gateway timed out or rejected the transaction, your cart is still safe.</div>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="{% url 'shop:checkout' %}" class="btn btn-brand rounded-pill px-4 py-3 fw-semibold">Back to Checkout</a>
+                <a href="{% url 'shop:cart_detail' %}" class="btn btn-outline-dark rounded-pill px-4 py-3 fw-semibold">View Cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

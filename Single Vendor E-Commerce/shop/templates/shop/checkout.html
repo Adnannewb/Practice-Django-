@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout | E-Shop{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <span class="badge rounded-pill text-bg-light border px-3 py-2 mb-2">Checkout</span>
+    <h1 class="display-6 fw-bold mb-2">Shipping & payment details</h1>
+    <p class="text-muted-2 mb-0">Confirm where the order should go, then continue to the payment gateway.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="hero-shell p-4 p-md-5 shadow-sm">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <span class="fs-3 text-primary">📍</span>
+                <h2 class="h4 fw-bold mb-0">Shipping Information</h2>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_first_name" class="form-label fw-semibold">First name</label>
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_last_name" class="form-label fw-semibold">Last name</label>
+                        {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_email" class="form-label fw-semibold">Email</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_address" class="form-label fw-semibold">Address</label>
+                        {{ form.address }}
+                        <div class="helptext">We’ll use this to deliver your order.</div>
+                        {{ form.address.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_city" class="form-label fw-semibold">City</label>
+                        {{ form.city }}
+                        {{ form.city.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_postal_code" class="form-label fw-semibold">Postal code</label>
+                        {{ form.postal_code }}
+                        {{ form.postal_code.errors }}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_note" class="form-label fw-semibold">Order Notes (optional)</label>
+                        {{ form.note }}
+                        <div class="helptext">Add any special instructions or delivery notes here.</div>
+                        {{ form.note.errors }}
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="fs-3 text-primary">💳</span>
+                        <h2 class="h4 fw-bold mb-0">Payment Method</h2>
+                    </div>
+
+                    <label class="d-block border rounded-4 p-4 bg-white soft-shadow mb-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <input class="form-check-input mt-1" type="radio" name="payment_method" checked>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold mb-1">SSLCommerz Secure Payment</div>
+                                <p class="text-muted-2 mb-0">Pay securely using your credit/debit card, mobile banking, or internet banking through SSLCommerz. All transactions are encrypted and secure.</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <button type="submit" class="btn btn-brand w-100 rounded-pill py-3 fw-semibold shadow-sm">Place Order Securely</button>
+                    <a href="{% url 'shop:cart_detail' %}" class="btn btn-outline-dark w-100 rounded-pill py-3 fw-semibold mt-3">Back to Cart</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="hero-shell p-4 p-md-5 sticky-lg-top shadow-sm" style="top: 6.5rem;">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <span class="fs-3">🧾</span>
+                <h2 class="h4 fw-bold mb-0">Order Summary</h2>
+            </div>
+            {% for item in cart.items.all %}
+                <div class="d-flex justify-content-between align-items-center mb-3 bg-white border rounded-4 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="56" height="56" class="rounded-3" style="object-fit: contain; background:#fff;">
+                        {% endif %}
+                        <div>
+                            <div class="fw-semibold">{{ item.product.name }}</div>
+                            <small class="text-muted-2">{{ item.quantity }} x ৳{{ item.product.price }}</small>
+                        </div>
+                    </div>
+                    <strong>৳{{ item.get_cost }}</strong>
+                </div>
+            {% endfor %}
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal</span>
+                <strong>৳{{ cart.get_total_price }}</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Shipping</span>
+                <strong class="text-success">Free</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-4">
+                <span class="h5 fw-bold mb-0">Total</span>
+                <span class="h4 fw-bold text-primary mb-0">৳{{ cart.get_total_price }}</span>
+            </div>
+            <div class="alert alert-info border-0 rounded-4 mb-0">Your payment information is encrypted and secure.</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

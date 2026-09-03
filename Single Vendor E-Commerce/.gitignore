@@ -1,0 +1,47 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Django and local data
+*.sqlite3
+media/
+products/
+staticfiles/
+
+# Local tooling and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Secrets and certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# Coverage and build output
+.coverage
+htmlcov/
+dist/
+build/
+
+# Keep migration source files under version control
+!shop/migrations/
+!shop/migrations/*.py
+!shop/migrations/__init__.py

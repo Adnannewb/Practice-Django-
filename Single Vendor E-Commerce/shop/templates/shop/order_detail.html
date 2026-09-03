@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }} | E-Shop{% endblock %}
+
+{% block content %}
+<div class="hero-shell p-4 p-md-5 shadow-sm mb-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <span class="badge rounded-pill text-bg-light border px-3 py-2 mb-2">Order Details</span>
+            <h1 class="display-6 fw-bold mb-2">Order #{{ order.id }} Details</h1>
+            <p class="text-muted-2 mb-0">Placed on {{ order.created|date:'M d, Y' }}.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill {% if order.paid %}text-bg-success{% else %}text-bg-secondary{% endif %} px-3 py-2">{% if order.paid %}Paid{% else %}Pending{% endif %}</span>
+            <span class="badge rounded-pill text-bg-primary px-3 py-2">{{ order.status|title }}</span>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="bg-white border rounded-4 p-3 h-100">
+                <div class="text-muted-2 small">Order Date</div>
+                <div class="fw-semibold">{{ order.created|date:'M d, Y' }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-white border rounded-4 p-3 h-100">
+                <div class="text-muted-2 small">Status</div>
+                <div class="fw-semibold">{{ order.status|title }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-white border rounded-4 p-3 h-100">
+                <div class="text-muted-2 small">Total Amount</div>
+                <div class="fw-semibold">৳{{ order.get_total_price }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-white border rounded-4 p-3 h-100">
+                <div class="text-muted-2 small">Payment Status</div>
+                <div class="fw-semibold">{% if order.paid %}Paid{% else %}Pending{% endif %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-6">
+        <div class="hero-shell p-4 shadow-sm h-100">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="fs-4 text-primary">📍</span>
+                <h2 class="h5 fw-bold mb-0">Shipping Address</h2>
+            </div>
+            <div class="fw-semibold fs-5">{{ order.first_name }} {{ order.last_name }}</div>
+            <div class="text-muted-2">{{ order.address }}</div>
+            <div class="text-muted-2">{{ order.city }}, {{ order.postal_code }}</div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="hero-shell p-4 shadow-sm h-100">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="fs-4 text-primary">✉</span>
+                <h2 class="h5 fw-bold mb-0">Contact Information</h2>
+            </div>
+            <div class="text-muted-2 mb-1"><strong>Email:</strong> {{ order.email }}</div>
+            <div class="text-muted-2"><strong>Transaction ID:</strong> {{ order.transaction_id|default:'N/A' }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="hero-shell p-4 p-md-5 shadow-sm mb-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="fs-4 text-primary">🧺</span>
+        <h2 class="h5 fw-bold mb-0">Order Items</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="56" height="56" class="rounded-3" style="object-fit: contain; background: #fff;">
+                                {% endif %}
+                                <div>
+                                    <div class="fw-semibold">{{ item.product.name }}</div>
+                                    <small class="text-muted-2">{{ item.product.category.name }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>৳{{ item.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="fw-semibold">৳{{ item.get_cost }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'shop:product_detail' item.product.slug %}" class="btn btn-outline-dark btn-sm rounded-pill">View</a>
+                            {% if order.paid %}
+                                <a href="{% url 'shop:rate_product' item.product.id %}" class="btn btn-outline-primary btn-sm rounded-pill ms-2">Rate</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                    <td class="fw-bold">৳{{ order.get_total_price }}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="hero-shell p-4 shadow-sm">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="fs-4 text-primary">📝</span>
+        <h2 class="h5 fw-bold mb-0">Order Notes</h2>
+    </div>
+    <p class="mb-0 text-muted-2">{{ order.note|default:'No notes provided.' }}</p>
+</div>
+{% endblock %}

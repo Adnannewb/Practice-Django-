@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Rate {{ product.name }} | E-Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-7">
+        <div class="hero-shell p-4 p-md-5">
+            <div class="mb-4">
+                <span class="badge rounded-pill text-bg-light border px-3 py-2 mb-2">Rate product</span>
+                <h1 class="display-6 fw-bold mb-2">{{ product.name }}</h1>
+                <p class="text-muted-2 mb-0">Share your experience with other shoppers.</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="id_rating" class="form-label fw-semibold">Rating</label>
+                    {{ form.rating }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_comment" class="form-label fw-semibold">Comment</label>
+                    {{ form.comment }}
+                </div>
+                <button type="submit" class="btn btn-brand rounded-pill px-4 py-3 fw-semibold">Submit review</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

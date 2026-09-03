@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} | E-Shop{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row g-4 align-items-start mb-5">
+    <div class="col-12 col-lg-5">
+        <div class="hero-shell p-3 p-md-4 shadow-sm">
+            {% if product.image %}
+                <div class="media-frame">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded-4 w-100" loading="lazy" style="max-height: 560px;">
+                </div>
+            {% else %}
+                <div class="bg-white border rounded-4 d-grid place-items-center" style="min-height: 420px;">No image available</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-12 col-lg-7">
+        <div class="hero-shell p-4 p-md-5 h-100 shadow-sm">
+            <span class="badge text-bg-light border px-3 py-2 mb-3">{{ product.category.name }}</span>
+            <h1 class="display-6 fw-bold mb-2">{{ product.name }}</h1>
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="text-warning fs-5">★</span>
+                <span class="text-muted-2">{{ product.average_rating|floatformat:1 }} average rating</span>
+                <span class="text-muted-2">• {{ product.ratings.count }} review{{ product.ratings.count|pluralize }}</span>
+            </div>
+            <div class="fs-2 fw-bold text-primary mb-3">৳{{ product.price }}</div>
+            <p class="text-muted-2 mb-4">{{ product.description }}</p>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="badge text-bg-success">In stock ({{ product.stock }} available)</span>
+                <span class="badge text-bg-secondary">{{ product.category.name }}</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-3 mb-4">
+                <a href="{% url 'shop:cart_add' product.id %}" class="btn btn-brand rounded-pill px-4 py-3 fw-semibold">Add to Cart</a>
+                {% if can_review %}
+                    <a href="{% url 'shop:rate_product' product.id %}" class="btn btn-outline-dark rounded-pill px-4 py-3 fw-semibold">Write a Review</a>
+                {% endif %}
+            </div>
+
+            {% if request.user.is_authenticated and not can_review %}
+                <div class="alert alert-light border rounded-4 mb-4">
+                    You can write a review after purchasing this product.
+                </div>
+            {% endif %}
+
+            {% if user_rating %}
+                <div class="bg-white rounded-4 border p-4">
+                    <div class="fw-semibold mb-2">Your rating</div>
+                    <div class="text-warning mb-2">{{ user_rating.rating }} / 5</div>
+                    <p class="text-muted-2 mb-0">{{ user_rating.comment }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="hero-shell p-4 p-md-5 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 fw-bold mb-0">Customer reviews</h2>
+                <span class="badge text-bg-light border">{{ product.ratings.count }} total</span>
+            </div>
+            {% for rating in product.ratings.all %}
+                <div class="border-top pt-3 mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ rating.user.username }}</strong>
+                        <span class="text-warning">{{ rating.rating }} ★</span>
+                    </div>
+                    <p class="text-muted-2 mb-0">{{ rating.comment }}</p>
+                </div>
+            {% empty %}
+                <div class="text-center py-4 text-muted-2">No reviews yet. Be the first to rate this product.</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="hero-shell p-4 p-md-5 shadow-sm">
+            <h2 class="h5 fw-bold mb-3">Related products</h2>
+            <div class="d-grid gap-3">
+                {% for item in related_product %}
+                    <a href="{% url 'shop:product_detail' item.slug %}" class="text-decoration-none">
+                        <div class="d-flex gap-3 align-items-center bg-white border rounded-4 p-3">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}" width="72" height="72" class="rounded-3" loading="lazy" style="object-fit: contain; background: #fff;">
+                            {% endif %}
+                            <div>
+                                <div class="fw-semibold text-dark">{{ item.name }}</div>
+                                <small class="text-muted-2">৳{{ item.price }}</small>
+                            </div>
+                        </div>
+                    </a>
+                {% empty %}
+                    <p class="text-muted-2 mb-0">No related products yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
